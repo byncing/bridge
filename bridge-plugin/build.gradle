@@ -1,0 +1,51 @@
+plugins {
+    id 'java'
+}
+
+
+group 'eu.byncing'
+version '1.0.0-BETA'
+
+repositories {
+    mavenCentral()
+    maven { url 'https://byncing.eu/repository/snapshots/' }
+
+    maven { url 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
+
+    maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+    maven { url 'https://oss.sonatype.org/content/repositories/central' }
+}
+
+configurations {
+    extraLibs
+}
+
+dependencies {
+    compileJava.options.encoding = 'UTF-8'
+
+    extraLibs project(':bridge-driver')
+    extraLibs('eu.byncing:net-api:1.0.0-SNAPSHOT')
+
+    implementation('net.md-5:bungeecord-api:1.17-R0.1-SNAPSHOT')
+    implementation("org.spigotmc:spigot-api:1.17-R0.1-SNAPSHOT")
+
+    compileOnly 'org.projectlombok:lombok:1.18.22'
+    annotationProcessor 'org.projectlombok:lombok:1.18.22'
+
+    testCompileOnly 'org.projectlombok:lombok:1.18.22'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.22'
+
+    configurations.implementation.extendsFrom(configurations.extraLibs)
+}
+
+jar {
+    from {
+        configurations.extraLibs.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(8)
+    }
+}

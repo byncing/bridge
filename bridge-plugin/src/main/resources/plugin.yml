@@ -1,0 +1,4 @@
+main: eu.byncing.bridge.plugin.spigot.BridgeSpigot
+name: bridge-plugin
+author: byncing
+version: 1.0.0-BETA

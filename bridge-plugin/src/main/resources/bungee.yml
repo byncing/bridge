@@ -1,0 +1,7 @@
+main: eu.byncing.bridge.plugin.bungee.BridgeBungee
+name: bridge-plugin
+author: byncing
+version: 1.0.0-BETA
+
+commands:
+  - bridge
