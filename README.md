@@ -26,7 +26,7 @@
 
 #### Tablist
 
-<img src="https://byncing.eu/graphic/bridge-driver/newtablist.png.png">
+<img src="https://byncing.eu/graphic/bridge-driver/newtablist.png">
 
 #### Commands
 <img src="https://byncing.eu/graphic/bridge-driver/commands.png">
