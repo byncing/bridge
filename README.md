@@ -1,6 +1,8 @@
-
 ### What does the bridge
 ##### The bridge synchronizes all spigot servers and the player data and there is also a still a small API.
+### Links
+* [SpigotMC](https://www.spigotmc.org/resources/bridge.97461/)
+* [Repository](https://byncing.eu/repository/)
 &nbsp;
 # Requirements
 * Java 8 or higher
