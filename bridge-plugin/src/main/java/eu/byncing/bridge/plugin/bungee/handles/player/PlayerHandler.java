@@ -7,7 +7,9 @@ import eu.byncing.bridge.driver.player.IBridgePlayer;
 import eu.byncing.bridge.driver.protocol.IPacketHandler;
 import eu.byncing.bridge.driver.protocol.packets.player.PacketPlayerKick;
 import eu.byncing.bridge.driver.protocol.packets.player.PacketPlayerMessage;
+import eu.byncing.bridge.driver.protocol.packets.player.PacketPlayerServiceChange;
 import eu.byncing.bridge.driver.protocol.packets.player.PacketPlayerUpdate;
+import eu.byncing.bridge.driver.service.IBridgeService;
 import eu.byncing.bridge.plugin.bungee.BridgeServer;
 import eu.byncing.bridge.plugin.bungee.impl.BridgePlayer;
 import eu.byncing.net.api.channel.IChannel;
@@ -49,10 +51,18 @@ public class PlayerHandler implements IPacketHandler<Packet> {
             player.disconnect(new TextComponent(string));
             server.getEvents().call(new PlayerKickEvent(bridgePlayer));
         }
+        if (packet instanceof PacketPlayerServiceChange) {
+            PacketPlayerServiceChange change = (PacketPlayerServiceChange) packet;
+            IBridgePlayer bridgePlayer = server.getPlayers().getPlayer(change.getUniqueId());
+            if (bridgePlayer == null) return;
+            IBridgeService service = server.getServices().getService(change.getService());
+            if (service == null) return;
+            bridgePlayer.connect(service);
+        }
     }
 
     @Override
     public Class<? extends Packet>[] getClasses() {
-        return new Class[]{PacketPlayerUpdate.class, PacketPlayerMessage.class, PacketPlayerKick.class};
+        return new Class[]{PacketPlayerUpdate.class, PacketPlayerMessage.class, PacketPlayerKick.class, PacketPlayerServiceChange.class};
     }
 }
