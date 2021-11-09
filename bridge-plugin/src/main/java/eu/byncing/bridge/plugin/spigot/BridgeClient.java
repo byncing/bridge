@@ -5,7 +5,7 @@ import eu.byncing.bridge.driver.event.EventManager;
 import eu.byncing.bridge.driver.player.PlayerManager;
 import eu.byncing.bridge.driver.protocol.PacketManager;
 import eu.byncing.bridge.driver.protocol.packets.service.PacketServiceAuth;
-import eu.byncing.bridge.driver.protocol.packets.service.PacketServiceAuthState;
+import eu.byncing.bridge.driver.service.IBridgeService;
 import eu.byncing.bridge.driver.service.ServiceManager;
 import eu.byncing.bridge.plugin.spigot.config.BridgeConfig;
 import eu.byncing.bridge.plugin.spigot.handles.player.PlayerConnectionHandler;
@@ -23,15 +23,12 @@ import org.bukkit.Server;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.util.UUID;
 
 public class BridgeClient extends NetClient {
 
     private final BridgeDriver driver = BridgeDriver.getInstance();
 
     private final BridgeConfig config = new BridgeConfig();
-
-    private UUID internalServiceUUID;
 
     private final PacketManager packets = driver.getPacketManager();
     private final PlayerManager players = driver.getPlayerManager();
@@ -53,8 +50,6 @@ public class BridgeClient extends NetClient {
             this.packets.register(new PlayerNetConnectionHandler(this), new PlayerConnectionHandler(this), new PlayerHandler(this));
             this.packets.register(new ServiceConnectionHandler(this), new ServiceHandler(this));
             this.init(channel -> {
-                sendMessage("Channel" + channel.getRemoteAddress() + " has initialized.");
-
                 ChannelPipeline pipeline = channel.getPipeline();
                 pipeline.handle(new ChannelHandler() {
                     @Override
@@ -66,8 +61,6 @@ public class BridgeClient extends NetClient {
                     @Override
                     public void handlePacket(IChannel channel, Packet packet) {
                         packets.handle(channel, packet);
-                        if (packet instanceof PacketServiceAuthState)
-                            internalServiceUUID = ((PacketServiceAuthState) packet).getUniqueId();
                     }
 
                     @Override
@@ -81,7 +74,7 @@ public class BridgeClient extends NetClient {
                 });
             }).connect(new InetSocketAddress(config.getHost(), config.getPort()));
         } catch (IOException e) {
-            e.printStackTrace();
+            sendMessage("Channel/" + config.getHost() + ":" + config.getPort() + " §cfailed to connect");
         }
     }
 
@@ -98,8 +91,8 @@ public class BridgeClient extends NetClient {
         return driver;
     }
 
-    public UUID getInternalServiceUUID() {
-        return internalServiceUUID;
+    public IBridgeService getInternalService() {
+        return services.getService(config.getName());
     }
 
     public BridgeConfig getConfig() {
