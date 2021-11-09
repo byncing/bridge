@@ -41,8 +41,6 @@ public class BridgeServer extends NetServer {
         try {
             this.packets.register(new ServiceHandler(this), new PlayerConnectionHandler(this), new PlayerHandler(this));
             this.option(NetOption.BUFFER_SIZE, 2024).init(channel -> {
-                sendMessage("Channel" + channel.getRemoteAddress() + " has initialized.");
-
                 ChannelPipeline pipeline = channel.getPipeline();
                 pipeline.handle(new ChannelHandler() {
                     @Override
@@ -57,11 +55,13 @@ public class BridgeServer extends NetServer {
 
                     @Override
                     public void handleDisconnected(IChannel channel) {
-                        sendMessage("Channel" + channel.getRemoteAddress() + " has disconnected.");
                         IBridgeService service = services.getService(channel);
-                        if (service == null) return;
+                        if (service == null) {
+                            sendMessage("Channel" + channel.getRemoteAddress() + " has disconnected.");
+                            return;
+                        }
                         services.getServices().remove(service);
-                        sendPacket(new PacketServiceLogout(service.getUniqueId(), service.getName(), service.getMotd(), service.getOnlineCount(), service.getMaxCount()));
+                        sendPacket(new PacketServiceLogout(service.getName(), service.getMotd(), service.getOnlineCount(), service.getMaxCount()));
                         sendMessage("Channel" + channel.getRemoteAddress() + " Service " + service.getName() + " has logout.");
                         events.call(new ServiceLogoutEvent(service));
                     }
