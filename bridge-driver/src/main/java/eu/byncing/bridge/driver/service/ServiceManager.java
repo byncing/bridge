@@ -4,7 +4,6 @@ import eu.byncing.net.api.channel.IChannel;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class ServiceManager {
 
@@ -14,15 +13,8 @@ public class ServiceManager {
         return services.stream().filter(service -> service.getChannel().equals(channel)).findFirst().orElse(null);
     }
 
-    public IBridgeService getService(UUID uniqueId) {
-        return services.stream().filter(service -> service.getUniqueId().equals(uniqueId)).findFirst().orElse(null);
-    }
-
     public IBridgeService getService(String name) {
-        return services.stream().filter(service -> {
-            String serviceName = service.getName().toLowerCase();
-            return serviceName.equalsIgnoreCase(name.toLowerCase());
-        }).findFirst().orElse(null);
+        return services.stream().filter(service -> service.getName().equals(name)).findFirst().orElse(null);
     }
 
     public List<IBridgeService> getServices() {
