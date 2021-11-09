@@ -9,32 +9,30 @@ public class PacketPlayerConnect extends Packet {
 
     private UUID uniqueId;
 
-    private String name;
-
-    private UUID serviceUniqueId;
+    private String name, service;
 
     public PacketPlayerConnect() {
         super();
     }
 
-    public PacketPlayerConnect(UUID uniqueId, String name, UUID serviceUniqueId) {
+    public PacketPlayerConnect(UUID uniqueId, String name, String service) {
         this.uniqueId = uniqueId;
         this.name = name;
-        this.serviceUniqueId = serviceUniqueId;
+        this.service = service;
     }
 
     @Override
     public void write(IPacketBuffer buffer) {
         buffer.write("uniqueId", uniqueId);
         buffer.write("name", name);
-        buffer.write("serviceUniqueId", serviceUniqueId);
+        buffer.write("service", service);
     }
 
     @Override
     public void read(IPacketBuffer buffer) {
         uniqueId = buffer.read("uniqueId", UUID.class);
         name = buffer.read("name", String.class);
-        serviceUniqueId = buffer.read("serviceUniqueId", UUID.class);
+        service = buffer.read("service", String.class);
     }
 
     public UUID getUniqueId() {
@@ -45,7 +43,7 @@ public class PacketPlayerConnect extends Packet {
         return name;
     }
 
-    public UUID getServiceUniqueId() {
-        return serviceUniqueId;
+    public String getService() {
+        return service;
     }
 }
