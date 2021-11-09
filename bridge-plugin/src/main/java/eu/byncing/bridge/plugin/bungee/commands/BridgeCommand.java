@@ -36,6 +36,7 @@ public class BridgeCommand extends Command implements TabExecutor {
             server.sendMessage(sender, "§7/bridge <player> <name> <info>");
             server.sendMessage(sender, "§7/bridge <player> <name> <kick> <reason>");
             server.sendMessage(sender, "§7/bridge <player> <name> <message> <value>");
+            server.sendMessage(sender, "§7/bridge <player> <name> <connect> <service>");
             return;
         }
 
@@ -93,7 +94,6 @@ public class BridgeCommand extends Command implements TabExecutor {
                 return;
             }
             server.sendMessage(sender, "§7Service: §a" + service.getName());
-            server.sendMessage(sender, "§7- UUID: " + service.getUniqueId());
             server.sendMessage(sender, "§7- Motd: " + service.getMotd());
             server.sendMessage(sender, "§7- OnlineCount: " + service.getOnlineCount());
             server.sendMessage(sender, "§7- MaxCount: " + service.getMaxCount());
@@ -123,19 +123,27 @@ public class BridgeCommand extends Command implements TabExecutor {
                 server.sendMessage(sender, "§7- UUID: " + player.getUniqueId());
                 server.sendMessage(sender, "§7- Service: §a" + player.getService().getName());
                 IBridgeService service = player.getService();
-                server.sendMessage(sender, "§7- UUID: " + service.getUniqueId());
                 server.sendMessage(sender, "§7- Motd: " + service.getMotd());
                 server.sendMessage(sender, "§7- OnlineCount: " + service.getOnlineCount());
                 server.sendMessage(sender, "§7- MaxCount: " + service.getMaxCount());
                 server.sendMessage(sender, "§7- Players: " + service.getPlayers().size());
             }
-            if (args[2].equalsIgnoreCase("kick") || args[2].equalsIgnoreCase("message")) {
+            if (args[2].equalsIgnoreCase("kick") || args[2].equalsIgnoreCase("message") || args[2].equalsIgnoreCase("connect")) {
                 if (args.length == 3) {
                     server.sendMessage(sender, "§cArgument 3 is missing!");
                     return;
                 }
                 if (args[2].equalsIgnoreCase("kick")) player.kick(args[3].replace(" ", "_"));
                 if (args[2].equalsIgnoreCase("message")) player.sendMessage(args[3].replace(" ", "_"));
+
+                if (args[2].equalsIgnoreCase("connect")) {
+                    IBridgeService service = server.getServices().getService(args[3]);
+                    if (service == null) {
+                        server.sendMessage(sender, "§cServer " + args[3] + " is offline!");
+                        return;
+                    }
+                    player.connect(service);
+                }
             }
         }
         if (args[0].equalsIgnoreCase("maxCount") || args[0].equalsIgnoreCase("maintenance")) {
