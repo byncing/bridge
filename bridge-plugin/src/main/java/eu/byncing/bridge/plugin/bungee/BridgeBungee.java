@@ -25,12 +25,10 @@ public class BridgeBungee extends Plugin {
 
         proxy.getPluginManager().registerCommand(this, new BridgeCommand(server));
         proxy.getPluginManager().registerListener(this, new BridgeListener(server));
-        proxy.getScheduler().schedule(this, () -> {
-            ProxyServer.getInstance().getPlayers().forEach(player -> {
-                String[] strings = server.getConfig().getTabStorage().update(player.getUniqueId());
-                player.setTabHeader(new TextComponent(strings[0]), new TextComponent(strings[1]));
-            });
-        }, 1, 1, TimeUnit.SECONDS);
+        proxy.getScheduler().schedule(this, () -> ProxyServer.getInstance().getPlayers().forEach(player -> {
+            String[] strings = server.getConfig().getTabStorage().update(player.getUniqueId());
+            player.setTabHeader(new TextComponent(strings[0]), new TextComponent(strings[1]));
+        }), 1, 1, TimeUnit.SECONDS);
     }
 
     @Override
