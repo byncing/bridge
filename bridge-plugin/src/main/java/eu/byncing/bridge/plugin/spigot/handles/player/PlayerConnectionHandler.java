@@ -23,7 +23,7 @@ public class PlayerConnectionHandler implements IPacketHandler<Packet> {
     public void handle(IChannel channel, Packet packet) {
         if (packet instanceof PacketPlayerConnect) {
             PacketPlayerConnect connect = (PacketPlayerConnect) packet;
-            BridgeService service = (BridgeService) client.getServices().getService(connect.getServiceUniqueId());
+            BridgeService service = (BridgeService) client.getServices().getService(connect.getService());
             BridgePlayer player = (BridgePlayer) client.getPlayers().getPlayer(connect.getUniqueId());
             service.getPlayers().add(player);
             player.setService(service);
@@ -32,7 +32,7 @@ public class PlayerConnectionHandler implements IPacketHandler<Packet> {
         }
         if (packet instanceof PacketPlayerDisconnect) {
             PacketPlayerDisconnect disconnect = (PacketPlayerDisconnect) packet;
-            BridgeService service = (BridgeService) client.getServices().getService(disconnect.getServiceUniqueId());
+            BridgeService service = (BridgeService) client.getServices().getService(disconnect.getService());
             BridgePlayer player = (BridgePlayer) client.getPlayers().getPlayer(disconnect.getUniqueId());
             service.getPlayers().remove(player);
             player.setService(service);

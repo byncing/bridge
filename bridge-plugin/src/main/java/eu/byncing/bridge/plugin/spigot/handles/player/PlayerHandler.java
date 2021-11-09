@@ -29,7 +29,7 @@ public class PlayerHandler implements IPacketHandler<Packet> {
     public void handle(IChannel channel, Packet packet) {
         if (packet instanceof PacketPlayerUpdate) {
             PacketPlayerUpdate update = (PacketPlayerUpdate) packet;
-            IBridgeService service = client.getServices().getService(update.getServiceUniqueId());
+            IBridgeService service = client.getServices().getService(update.getService());
             BridgePlayer player;
             if (client.getPlayers().getPlayer(update.getUniqueId()) == null) {
                 player = new BridgePlayer(update.getUniqueId(), update.getName(), service);
