@@ -4,6 +4,7 @@ import eu.byncing.bridge.driver.BridgeUtil;
 import eu.byncing.bridge.driver.protocol.packets.player.PacketPlayerDisconnect;
 import eu.byncing.bridge.driver.protocol.packets.player.PacketPlayerUpdate;
 import eu.byncing.bridge.driver.protocol.packets.service.PacketServiceUpdate;
+import eu.byncing.bridge.driver.scheduler.Scheduler;
 import eu.byncing.bridge.driver.service.IBridgeService;
 import eu.byncing.bridge.plugin.spigot.listener.BridgeListener;
 import org.bukkit.Bukkit;
@@ -22,22 +23,23 @@ public class BridgeSpigot extends JavaPlugin {
         Server server = this.getServer();
         client = new BridgeClient(server);
         server.getPluginManager().registerEvents(new BridgeListener(client), this);
-        Bukkit.getScheduler().runTaskTimer(this, () -> {
+
+        Scheduler.schedule(() -> {
             if (client != null && client.isConnected()) {
-                IBridgeService service = client.getServices().getService(client.getInternalServiceUUID());
+                IBridgeService service = client.getInternalService();
                 if (service != null) {
-                    client.sendPacket(new PacketServiceUpdate(service.getUniqueId(), service.getName(), BridgeUtil.builder(server.getMotd()).replace("§", "").buildIndex(0), server.getOnlinePlayers().size(), server.getMaxPlayers()));
-                    Bukkit.getOnlinePlayers().forEach(player -> client.sendPacket(new PacketPlayerUpdate(player.getUniqueId(), player.getName(), service.getUniqueId())));
+                    client.sendPacket(new PacketServiceUpdate(service.getName(), BridgeUtil.builder(server.getMotd()).replace("&", "§", "Â").buildIndex(0), server.getOnlinePlayers().size(), server.getMaxPlayers()));
+                    Bukkit.getOnlinePlayers().forEach(player -> client.sendPacket(new PacketPlayerUpdate(player.getUniqueId(), player.getName(), service.getName())));
                 }
             }
-        }, 20, 20);
+        }, 1000, 1000);
     }
 
     @Override
     public void onDisable() {
         if (client != null && client.isConnected()) {
-            IBridgeService service = client.getServices().getService(client.getInternalServiceUUID());
-            service.getPlayers().forEach(player -> service.sendPacket(new PacketPlayerDisconnect(player.getUniqueId(), player.getName(), player.getService().getUniqueId())));
+            IBridgeService service = client.getInternalService();
+            service.getPlayers().forEach(player -> service.sendPacket(new PacketPlayerDisconnect(player.getUniqueId(), player.getName(), service.getName())));
             client.close();
         }
     }
