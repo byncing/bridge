@@ -1,14 +1,15 @@
 package eu.byncing.bridge.plugin.bungee.impl;
 
 import eu.byncing.bridge.driver.BridgeDriver;
+import eu.byncing.bridge.driver.BridgeUtil;
 import eu.byncing.bridge.driver.player.IBridgePlayer;
 import eu.byncing.bridge.driver.protocol.packets.player.PacketPlayerKick;
 import eu.byncing.bridge.driver.protocol.packets.player.PacketPlayerMessage;
 import eu.byncing.bridge.driver.protocol.packets.player.PacketPlayerUpdate;
 import eu.byncing.bridge.driver.service.IBridgeService;
-import eu.byncing.bridge.driver.BridgeUtil;
 import eu.byncing.net.api.protocol.Packet;
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.util.UUID;
@@ -43,6 +44,14 @@ public class BridgePlayer implements IBridgePlayer {
     }
 
     @Override
+    public void connect(IBridgeService service) {
+        ProxiedPlayer player = ProxyServer.getInstance().getPlayer(uniqueId);
+        ServerInfo info = ProxyServer.getInstance().getServerInfo(service.getName());
+        if (info == null) return;
+        player.connect(info);
+    }
+
+    @Override
     public boolean hasPermission(String permission) {
         ProxiedPlayer player = ProxyServer.getInstance().getPlayer(uniqueId);
         if (player == null) return false;
@@ -51,7 +60,7 @@ public class BridgePlayer implements IBridgePlayer {
 
     public void update(PacketPlayerUpdate update) {
         name = update.getName();
-        service = BridgeDriver.getInstance().getServiceManager().getService(update.getServiceUniqueId());
+        service = BridgeDriver.getInstance().getServiceManager().getService(update.getService());
     }
 
     @Override

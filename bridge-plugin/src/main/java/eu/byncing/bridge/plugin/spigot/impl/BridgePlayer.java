@@ -1,12 +1,13 @@
 package eu.byncing.bridge.plugin.spigot.impl;
 
 import eu.byncing.bridge.driver.BridgeDriver;
+import eu.byncing.bridge.driver.BridgeUtil;
 import eu.byncing.bridge.driver.player.IBridgePlayer;
 import eu.byncing.bridge.driver.protocol.packets.player.PacketPlayerKick;
 import eu.byncing.bridge.driver.protocol.packets.player.PacketPlayerMessage;
+import eu.byncing.bridge.driver.protocol.packets.player.PacketPlayerServiceChange;
 import eu.byncing.bridge.driver.protocol.packets.player.PacketPlayerUpdate;
 import eu.byncing.bridge.driver.service.IBridgeService;
-import eu.byncing.bridge.driver.BridgeUtil;
 import eu.byncing.net.api.protocol.Packet;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -43,6 +44,11 @@ public class BridgePlayer implements IBridgePlayer {
     }
 
     @Override
+    public void connect(IBridgeService service) {
+        sendPacket(new PacketPlayerServiceChange(uniqueId, service.getName()));
+    }
+
+    @Override
     public boolean hasPermission(String permission) {
         Player player = Bukkit.getPlayer(uniqueId);
         if (player == null) return false;
@@ -51,7 +57,7 @@ public class BridgePlayer implements IBridgePlayer {
 
     public void update(PacketPlayerUpdate update) {
         name = update.getName();
-        service = BridgeDriver.getInstance().getServiceManager().getService(update.getServiceUniqueId());
+        service = BridgeDriver.getInstance().getServiceManager().getService(update.getService());
     }
 
     @Override
