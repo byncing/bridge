@@ -8,7 +8,7 @@ version '1.0.0-BETA'
 
 repositories {
     mavenCentral()
-    maven { url 'https://byncing.eu/repository/snapshots/' }
+    maven { url 'https://byncing.eu/repository/' }
 
     maven { url 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
 
