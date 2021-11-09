@@ -7,7 +7,7 @@ version '1.0.0-BETA'
 
 repositories {
     mavenCentral()
-    maven { url 'https://byncing.eu/repository/snapshots/' }
+    maven { url 'https://byncing.eu/repository/' }
 }
 
 dependencies {
