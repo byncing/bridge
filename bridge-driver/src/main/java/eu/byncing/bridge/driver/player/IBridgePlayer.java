@@ -19,6 +19,8 @@ public interface IBridgePlayer extends IPacketSender, ICommandSender {
 
     void connect(IBridgeService service);
 
+    void sendTitle(String title, String subtitle, int fadeIn, int stay, int fadeOut);
+
     boolean hasPermission(String permission);
 
     UUID getUniqueId();

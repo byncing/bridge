@@ -5,10 +5,13 @@ import eu.byncing.bridge.driver.BridgeUtil;
 import eu.byncing.bridge.driver.player.IBridgePlayer;
 import eu.byncing.bridge.driver.protocol.packets.player.PacketPlayerKick;
 import eu.byncing.bridge.driver.protocol.packets.player.PacketPlayerMessage;
+import eu.byncing.bridge.driver.protocol.packets.player.PacketPlayerTitle;
 import eu.byncing.bridge.driver.protocol.packets.player.PacketPlayerUpdate;
 import eu.byncing.bridge.driver.service.IBridgeService;
 import eu.byncing.net.api.protocol.Packet;
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.Title;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
@@ -49,6 +52,23 @@ public class BridgePlayer implements IBridgePlayer {
         ServerInfo info = ProxyServer.getInstance().getServerInfo(service.getName());
         if (info == null) return;
         player.connect(info);
+    }
+
+    @Override
+    public void sendTitle(String title, String subtitle, int fadeIn, int stay, int fadeOut) {
+        ProxiedPlayer player = ProxyServer.getInstance().getPlayer(uniqueId);
+        if (player == null && service == null) return;
+        sendMessage("Test");
+        String[] strings = BridgeUtil.builder(title, subtitle).replace("&", "§", "Â").build();
+        Title packet = ProxyServer.getInstance().createTitle();
+        packet.title(new TextComponent(title));
+        packet.subTitle(new TextComponent(subtitle));
+        packet.fadeIn(fadeIn);
+        packet.stay(stay);
+        packet.fadeOut(fadeOut);
+        packet.send(player);
+
+        sendPacket(new PacketPlayerTitle(uniqueId, strings[0], strings[1], fadeIn, stay, fadeOut));
     }
 
     @Override
