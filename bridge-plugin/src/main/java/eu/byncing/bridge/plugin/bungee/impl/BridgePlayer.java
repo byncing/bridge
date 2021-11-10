@@ -58,7 +58,6 @@ public class BridgePlayer implements IBridgePlayer {
     public void sendTitle(String title, String subtitle, int fadeIn, int stay, int fadeOut) {
         ProxiedPlayer player = ProxyServer.getInstance().getPlayer(uniqueId);
         if (player == null && service == null) return;
-        sendMessage("Test");
         String[] strings = BridgeUtil.builder(title, subtitle).replace("&", "§", "Â").build();
         Title packet = ProxyServer.getInstance().createTitle();
         packet.title(new TextComponent(title));
