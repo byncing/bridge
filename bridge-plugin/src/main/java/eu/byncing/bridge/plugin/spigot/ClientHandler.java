@@ -1,7 +1,6 @@
 package eu.byncing.bridge.plugin.spigot;
 
 import eu.byncing.bridge.driver.protocol.packets.service.PacketServiceAuth;
-import eu.byncing.bridge.driver.scheduler.Scheduler;
 import eu.byncing.bridge.plugin.spigot.config.BridgeConfig;
 import eu.byncing.net.api.channel.ChannelHandler;
 import eu.byncing.net.api.channel.IChannel;
@@ -26,7 +25,7 @@ public class ClientHandler extends ChannelHandler {
 
     @Override
     public void handlePacket(IChannel channel, Packet packet) {
-        Scheduler.schedule(() -> client.getPackets().handle(channel, packet));
+        client.getPackets().handle(channel, packet);
     }
 
     @Override

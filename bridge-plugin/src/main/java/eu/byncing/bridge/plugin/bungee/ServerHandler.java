@@ -2,7 +2,6 @@ package eu.byncing.bridge.plugin.bungee;
 
 import eu.byncing.bridge.driver.event.service.ServiceLogoutEvent;
 import eu.byncing.bridge.driver.protocol.packets.service.PacketServiceLogout;
-import eu.byncing.bridge.driver.scheduler.Scheduler;
 import eu.byncing.bridge.driver.service.IBridgeService;
 import eu.byncing.net.api.channel.ChannelHandler;
 import eu.byncing.net.api.channel.IChannel;
@@ -23,7 +22,7 @@ public class ServerHandler extends ChannelHandler {
 
     @Override
     public void handlePacket(IChannel channel, Packet packet) {
-        Scheduler.schedule(() -> server.getPackets().handle(channel, packet));
+        server.getPackets().handle(channel, packet);
     }
 
     @Override
