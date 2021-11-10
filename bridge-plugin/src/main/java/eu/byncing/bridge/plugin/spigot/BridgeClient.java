@@ -4,7 +4,6 @@ import eu.byncing.bridge.driver.BridgeDriver;
 import eu.byncing.bridge.driver.event.EventManager;
 import eu.byncing.bridge.driver.player.PlayerManager;
 import eu.byncing.bridge.driver.protocol.PacketManager;
-import eu.byncing.bridge.driver.protocol.packets.service.PacketServiceAuth;
 import eu.byncing.bridge.driver.service.IBridgeService;
 import eu.byncing.bridge.driver.service.ServiceManager;
 import eu.byncing.bridge.plugin.spigot.config.BridgeConfig;
@@ -14,9 +13,6 @@ import eu.byncing.bridge.plugin.spigot.handles.player.PlayerNetConnectionHandler
 import eu.byncing.bridge.plugin.spigot.handles.service.ServiceConnectionHandler;
 import eu.byncing.bridge.plugin.spigot.handles.service.ServiceHandler;
 import eu.byncing.net.api.NetClient;
-import eu.byncing.net.api.channel.ChannelHandler;
-import eu.byncing.net.api.channel.ChannelPipeline;
-import eu.byncing.net.api.channel.IChannel;
 import eu.byncing.net.api.protocol.Packet;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
@@ -43,36 +39,11 @@ public class BridgeClient extends NetClient {
                 sendMessage("§c§lPlease enter the bridge key in the plugins/bridge/config.json file!");
                 return;
             }
-
             sendMessage("Channel/" + config.getHost() + ":" + config.getPort() + " trying to connect!");
-
             this.server = server;
             this.packets.register(new PlayerNetConnectionHandler(this), new PlayerConnectionHandler(this), new PlayerHandler(this));
             this.packets.register(new ServiceConnectionHandler(this), new ServiceHandler(this));
-            this.init(channel -> {
-                ChannelPipeline pipeline = channel.getPipeline();
-                pipeline.handle(new ChannelHandler() {
-                    @Override
-                    public void handleConnected(IChannel channel) {
-                        sendMessage("Channel" + channel.getRemoteAddress() + " has connected.");
-                        channel.sendPacket(new PacketServiceAuth(config.getKey(), config.getName(), server.getMotd(), server.getOnlinePlayers().size(), server.getMaxPlayers()));
-                    }
-
-                    @Override
-                    public void handlePacket(IChannel channel, Packet packet) {
-                        packets.handle(channel, packet);
-                    }
-
-                    @Override
-                    public void handleDisconnected(IChannel channel) {
-                        sendMessage("Channel" + channel.getRemoteAddress() + " has disconnected.");
-                    }
-
-                    @Override
-                    public void handleException(Exception exception) {
-                    }
-                });
-            }).connect(new InetSocketAddress(config.getHost(), config.getPort()));
+            this.init(channel -> channel.getPipeline().handle(new ClientHandler(this))).connect(new InetSocketAddress(config.getHost(), config.getPort()));
         } catch (IOException e) {
             sendMessage("Channel/" + config.getHost() + ":" + config.getPort() + " §cfailed to connect");
         }

@@ -23,7 +23,6 @@ public class BridgeSpigot extends JavaPlugin {
         Server server = this.getServer();
         client = new BridgeClient(server);
         server.getPluginManager().registerEvents(new BridgeListener(client), this);
-
         Scheduler.schedule(() -> {
             if (client != null && client.isConnected()) {
                 IBridgeService service = client.getInternalService();
