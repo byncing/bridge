@@ -1,13 +1,12 @@
 package eu.byncing.bridge.plugin.bungee;
 
+import eu.byncing.bridge.driver.scheduler.Scheduler;
 import eu.byncing.bridge.plugin.bungee.commands.BridgeCommand;
 import eu.byncing.bridge.plugin.bungee.config.BridgeData;
 import eu.byncing.bridge.plugin.bungee.listener.BridgeListener;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.plugin.Plugin;
-
-import java.util.concurrent.TimeUnit;
 
 public class BridgeBungee extends Plugin {
 
@@ -25,10 +24,11 @@ public class BridgeBungee extends Plugin {
 
         proxy.getPluginManager().registerCommand(this, new BridgeCommand(server));
         proxy.getPluginManager().registerListener(this, new BridgeListener(server));
-        proxy.getScheduler().schedule(this, () -> ProxyServer.getInstance().getPlayers().forEach(player -> {
+
+        Scheduler.schedule(() -> ProxyServer.getInstance().getPlayers().forEach(player -> {
             String[] strings = server.getConfig().getTabStorage().update(player.getUniqueId());
             player.setTabHeader(new TextComponent(strings[0]), new TextComponent(strings[1]));
-        }), 1, 1, TimeUnit.SECONDS);
+        }), 1000, 1000);
     }
 
     @Override
