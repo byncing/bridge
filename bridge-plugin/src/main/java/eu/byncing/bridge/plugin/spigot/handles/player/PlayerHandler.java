@@ -2,11 +2,13 @@ package eu.byncing.bridge.plugin.spigot.handles.player;
 
 import eu.byncing.bridge.driver.BridgeUtil;
 import eu.byncing.bridge.driver.event.player.PlayerKickEvent;
+import eu.byncing.bridge.driver.event.player.PlayerTitleEvent;
 import eu.byncing.bridge.driver.event.player.PlayerUpdateEvent;
 import eu.byncing.bridge.driver.player.IBridgePlayer;
 import eu.byncing.bridge.driver.protocol.IPacketHandler;
 import eu.byncing.bridge.driver.protocol.packets.player.PacketPlayerKick;
 import eu.byncing.bridge.driver.protocol.packets.player.PacketPlayerMessage;
+import eu.byncing.bridge.driver.protocol.packets.player.PacketPlayerTitle;
 import eu.byncing.bridge.driver.protocol.packets.player.PacketPlayerUpdate;
 import eu.byncing.bridge.driver.service.IBridgeService;
 import eu.byncing.bridge.plugin.spigot.BridgeClient;
@@ -58,10 +60,17 @@ public class PlayerHandler implements IPacketHandler<Packet> {
             Bukkit.getScheduler().runTask(BridgeSpigot.getInstance(), () -> player.kickPlayer(string));
             client.getEvents().call(new PlayerKickEvent(bridgePlayer));
         }
+        if (packet instanceof PacketPlayerTitle) {
+            PacketPlayerTitle title = (PacketPlayerTitle) packet;
+            IBridgePlayer player = client.getPlayers().getPlayer(title.getUniqueId());
+            if (player == null) return;
+            String[] strings = BridgeUtil.builder(title.getTitle(), title.getSubtitle()).replace("§", "&").build();
+            client.getEvents().call(new PlayerTitleEvent(player, strings[0], strings[1], title.getFadeIn(), title.getStay(), title.getFadeOut()));
+        }
     }
 
     @Override
     public Class<? extends Packet>[] getClasses() {
-        return new Class[]{PacketPlayerUpdate.class, PacketPlayerMessage.class, PacketPlayerKick.class};
+        return new Class[]{PacketPlayerUpdate.class, PacketPlayerMessage.class, PacketPlayerKick.class, PacketPlayerTitle.class};
     }
 }

@@ -2,13 +2,11 @@ package eu.byncing.bridge.plugin.bungee.handles.player;
 
 import eu.byncing.bridge.driver.BridgeUtil;
 import eu.byncing.bridge.driver.event.player.PlayerKickEvent;
+import eu.byncing.bridge.driver.event.player.PlayerTitleEvent;
 import eu.byncing.bridge.driver.event.player.PlayerUpdateEvent;
 import eu.byncing.bridge.driver.player.IBridgePlayer;
 import eu.byncing.bridge.driver.protocol.IPacketHandler;
-import eu.byncing.bridge.driver.protocol.packets.player.PacketPlayerKick;
-import eu.byncing.bridge.driver.protocol.packets.player.PacketPlayerMessage;
-import eu.byncing.bridge.driver.protocol.packets.player.PacketPlayerServiceChange;
-import eu.byncing.bridge.driver.protocol.packets.player.PacketPlayerUpdate;
+import eu.byncing.bridge.driver.protocol.packets.player.*;
 import eu.byncing.bridge.driver.service.IBridgeService;
 import eu.byncing.bridge.plugin.bungee.BridgeServer;
 import eu.byncing.bridge.plugin.bungee.impl.BridgePlayer;
@@ -59,10 +57,18 @@ public class PlayerHandler implements IPacketHandler<Packet> {
             if (service == null) return;
             bridgePlayer.connect(service);
         }
+        if (packet instanceof PacketPlayerTitle) {
+            PacketPlayerTitle title = (PacketPlayerTitle) packet;
+            IBridgePlayer player = server.getPlayers().getPlayer(title.getUniqueId());
+            if (player == null) return;
+            String[] strings = BridgeUtil.builder(title.getTitle(), title.getSubtitle()).replace("§", "&").build();
+            player.sendTitle(strings[0], strings[1], title.getFadeIn(), title.getStay(), title.getFadeOut());
+            server.getEvents().call(new PlayerTitleEvent(player, strings[0], strings[1], title.getFadeIn(), title.getStay(), title.getFadeOut()));
+        }
     }
 
     @Override
     public Class<? extends Packet>[] getClasses() {
-        return new Class[]{PacketPlayerUpdate.class, PacketPlayerMessage.class, PacketPlayerKick.class, PacketPlayerServiceChange.class};
+        return new Class[]{PacketPlayerUpdate.class, PacketPlayerMessage.class, PacketPlayerKick.class, PacketPlayerServiceChange.class, PacketPlayerTitle.class};
     }
 }
