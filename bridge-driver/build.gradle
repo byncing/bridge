@@ -10,8 +10,22 @@ repositories {
     maven { url 'https://byncing.eu/repository/' }
 }
 
+configurations {
+    extraLibs
+}
+
 dependencies {
-    implementation('eu.byncing:net-api:1.0.0-SNAPSHOT')
+    compileJava.options.encoding = 'UTF-8'
+
+    extraLibs compileOnly('eu.byncing:net-api:1.0.0-SNAPSHOT')
+
+    configurations.compileOnly.extendsFrom(configurations.extraLibs)
+}
+
+jar {
+    from {
+        configurations.extraLibs.collect { it.isDirectory() ? it : zipTree(it) }
+    }
 }
 
 java {
