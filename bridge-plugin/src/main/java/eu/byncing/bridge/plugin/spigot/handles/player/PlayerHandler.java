@@ -1,6 +1,5 @@
 package eu.byncing.bridge.plugin.spigot.handles.player;
 
-import eu.byncing.bridge.driver.BridgeUtil;
 import eu.byncing.bridge.driver.event.player.PlayerKickEvent;
 import eu.byncing.bridge.driver.event.player.PlayerTitleEvent;
 import eu.byncing.bridge.driver.event.player.PlayerUpdateEvent;
@@ -48,24 +47,21 @@ public class PlayerHandler implements IPacketHandler<Packet> {
             PacketPlayerMessage message = (PacketPlayerMessage) packet;
             Player player = Bukkit.getPlayer(message.getUniqueId());
             if (player == null) return;
-            String string = BridgeUtil.builder(message.getMessage()).replace("§", "&").replace(" ", "_").buildIndex(0);
-            player.sendMessage(string);
+            player.sendMessage(message.getMessage());
         }
         if (packet instanceof PacketPlayerKick) {
             PacketPlayerKick kick = (PacketPlayerKick) packet;
             IBridgePlayer bridgePlayer = client.getPlayers().getPlayer(kick.getUniqueId());
             Player player = Bukkit.getPlayer(kick.getUniqueId());
             if (player == null) return;
-            String string = BridgeUtil.builder(kick.getReason()).replace("§", "&").replace(" ", "_").buildIndex(0);
-            Bukkit.getScheduler().runTask(BridgeSpigot.getInstance(), () -> player.kickPlayer(string));
+            Bukkit.getScheduler().runTask(BridgeSpigot.getInstance(), () -> player.kickPlayer(kick.getReason()));
             client.getEvents().call(new PlayerKickEvent(bridgePlayer));
         }
         if (packet instanceof PacketPlayerTitle) {
             PacketPlayerTitle title = (PacketPlayerTitle) packet;
             IBridgePlayer player = client.getPlayers().getPlayer(title.getUniqueId());
             if (player == null) return;
-            String[] strings = BridgeUtil.builder(title.getTitle(), title.getSubtitle()).replace("§", "&").build();
-            client.getEvents().call(new PlayerTitleEvent(player, strings[0], strings[1], title.getFadeIn(), title.getStay(), title.getFadeOut()));
+            client.getEvents().call(new PlayerTitleEvent(player, title.getTitle(), title.getSubtitle(), title.getFadeIn(), title.getStay(), title.getFadeOut()));
         }
     }
 

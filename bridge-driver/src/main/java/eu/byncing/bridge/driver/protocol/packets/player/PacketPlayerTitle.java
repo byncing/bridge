@@ -1,5 +1,6 @@
 package eu.byncing.bridge.driver.protocol.packets.player;
 
+import eu.byncing.bridge.driver.BridgeUtil;
 import eu.byncing.net.api.protocol.IPacketBuffer;
 import eu.byncing.net.api.protocol.Packet;
 
@@ -19,8 +20,8 @@ public class PacketPlayerTitle extends Packet {
 
     public PacketPlayerTitle(UUID uniqueId, String title, String subtitle, int fadeIn, int stay, int fadeOut) {
         this.uniqueId = uniqueId;
-        this.title = title;
-        this.subtitle = subtitle;
+        this.title = BridgeUtil.chatEncode(true, title)[0];
+        this.subtitle = BridgeUtil.chatEncode(true, subtitle)[0];
         this.fadeIn = fadeIn;
         this.stay = stay;
         this.fadeOut = fadeOut;
@@ -39,8 +40,8 @@ public class PacketPlayerTitle extends Packet {
     @Override
     public void read(IPacketBuffer buffer) {
         uniqueId = buffer.read("uniqueId", UUID.class);
-        title = buffer.read("title", String.class);
-        subtitle = buffer.read("subtitle", String.class);
+        title = BridgeUtil.chatDecode(true, buffer.read("title", String.class))[0];
+        subtitle = BridgeUtil.chatDecode(true, buffer.read("subtitle", String.class))[0];
         fadeIn = buffer.read("fadeIn", Integer.class);
         stay = buffer.read("stay", Integer.class);
         fadeOut = buffer.read("fadeOut", Integer.class);

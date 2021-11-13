@@ -1,5 +1,6 @@
 package eu.byncing.bridge.driver.protocol.packets.player;
 
+import eu.byncing.bridge.driver.BridgeUtil;
 import eu.byncing.net.api.protocol.IPacketBuffer;
 import eu.byncing.net.api.protocol.Packet;
 
@@ -17,7 +18,7 @@ public class PacketPlayerKick extends Packet {
 
     public PacketPlayerKick(UUID uniqueId, String reason) {
         this.uniqueId = uniqueId;
-        this.reason = reason;
+        this.reason = BridgeUtil.chatEncode(true, reason)[0];
     }
 
     @Override
@@ -29,7 +30,7 @@ public class PacketPlayerKick extends Packet {
     @Override
     public void read(IPacketBuffer buffer) {
         uniqueId = buffer.read("uniqueId", UUID.class);
-        reason = buffer.read("reason", String.class);
+        reason = BridgeUtil.chatDecode(true, buffer.read("reason", String.class))[0];
     }
 
     public UUID getUniqueId() {

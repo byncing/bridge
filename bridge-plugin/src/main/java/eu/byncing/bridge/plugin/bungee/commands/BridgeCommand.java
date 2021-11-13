@@ -133,8 +133,8 @@ public class BridgeCommand extends Command implements TabExecutor {
                     server.sendMessage(sender, "§cArgument 3 is missing!");
                     return;
                 }
-                if (args[2].equalsIgnoreCase("kick")) player.kick(args[3].replace(" ", "_"));
-                if (args[2].equalsIgnoreCase("message")) player.sendMessage(args[3].replace(" ", "_"));
+                if (args[2].equalsIgnoreCase("kick")) player.kick(args[3]);
+                if (args[2].equalsIgnoreCase("message")) player.sendMessage(args[3]);
 
                 if (args[2].equalsIgnoreCase("connect")) {
                     IBridgeService service = server.getServices().getService(args[3]);

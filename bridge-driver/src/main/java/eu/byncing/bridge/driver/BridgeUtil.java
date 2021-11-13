@@ -30,6 +30,18 @@ public class BridgeUtil {
         return new StringHelper(string);
     }
 
+    public static String[] chatEncode(boolean split, String... strings) {
+        StringHelper helper = new StringHelper(strings).replace("&", "§");
+        if (split) helper.replace(" ", "_").build();
+        return helper.build();
+    }
+
+    public static String[] chatDecode(boolean split, String... strings) {
+        StringHelper helper = new StringHelper(strings).replace("§", "&");
+        if (split) helper.replace(" ", "_").build();
+        return helper.build();
+    }
+
     public static class StringHelper {
 
         private final String[] string;

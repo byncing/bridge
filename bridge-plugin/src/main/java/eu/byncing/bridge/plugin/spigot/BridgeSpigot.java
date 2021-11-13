@@ -1,6 +1,5 @@
 package eu.byncing.bridge.plugin.spigot;
 
-import eu.byncing.bridge.driver.BridgeUtil;
 import eu.byncing.bridge.driver.protocol.packets.player.PacketPlayerDisconnect;
 import eu.byncing.bridge.driver.protocol.packets.player.PacketPlayerUpdate;
 import eu.byncing.bridge.driver.protocol.packets.service.PacketServiceUpdate;
@@ -27,7 +26,7 @@ public class BridgeSpigot extends JavaPlugin {
             if (client != null && client.isConnected()) {
                 IBridgeService service = client.getInternalService();
                 if (service != null) {
-                    client.sendPacket(new PacketServiceUpdate(service.getName(), BridgeUtil.builder(server.getMotd()).replace("&", "§", "Â").buildIndex(0), server.getOnlinePlayers().size(), server.getMaxPlayers()));
+                    client.sendPacket(new PacketServiceUpdate(service.getName(), server.getMotd(), server.getOnlinePlayers().size(), server.getMaxPlayers()));
                     Bukkit.getOnlinePlayers().forEach(player -> client.sendPacket(new PacketPlayerUpdate(player.getUniqueId(), player.getName(), service.getName())));
                 }
             }

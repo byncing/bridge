@@ -1,6 +1,5 @@
 package eu.byncing.bridge.plugin;
 
-import eu.byncing.bridge.driver.BridgeUtil;
 import eu.byncing.bridge.driver.player.IBridgePlayer;
 import eu.byncing.bridge.driver.protocol.packets.service.PacketServiceUpdate;
 import eu.byncing.bridge.driver.service.IBridgeService;
@@ -26,7 +25,7 @@ public class BridgeService implements IBridgeService {
     public BridgeService(IChannel channel, String name, String motd, int onlineCount, int maxCount) {
         this.channel = channel;
         this.name = name;
-        this.motd = BridgeUtil.builder(motd).replace("§", "&").buildIndex(0);
+        this.motd = motd;
         this.onlineCount = onlineCount;
         this.maxCount = maxCount;
     }
@@ -46,7 +45,7 @@ public class BridgeService implements IBridgeService {
     }
 
     public void update(PacketServiceUpdate update) {
-        motd = BridgeUtil.builder(update.getMotd()).replace("§", "&").buildIndex(0);
+        motd = update.getMotd();
         onlineCount = update.getOnlineCount();
         maxCount = update.getMaxCount();
     }

@@ -61,9 +61,8 @@ public class PlayerHandler implements IPacketHandler<Packet> {
             PacketPlayerTitle title = (PacketPlayerTitle) packet;
             IBridgePlayer player = server.getPlayers().getPlayer(title.getUniqueId());
             if (player == null) return;
-            String[] strings = BridgeUtil.builder(title.getTitle(), title.getSubtitle()).replace("§", "&").build();
-            player.sendTitle(strings[0], strings[1], title.getFadeIn(), title.getStay(), title.getFadeOut());
-            server.getEvents().call(new PlayerTitleEvent(player, strings[0], strings[1], title.getFadeIn(), title.getStay(), title.getFadeOut()));
+            player.sendTitle(title.getTitle(), title.getSubtitle(), title.getFadeIn(), title.getStay(), title.getFadeOut());
+            server.getEvents().call(new PlayerTitleEvent(player, title.getTitle(), title.getSubtitle(), title.getFadeIn(), title.getStay(), title.getFadeOut()));
         }
     }
 

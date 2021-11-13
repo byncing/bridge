@@ -1,7 +1,6 @@
 package eu.byncing.bridge.plugin.spigot.impl;
 
 import eu.byncing.bridge.driver.BridgeDriver;
-import eu.byncing.bridge.driver.BridgeUtil;
 import eu.byncing.bridge.driver.player.IBridgePlayer;
 import eu.byncing.bridge.driver.protocol.packets.player.*;
 import eu.byncing.bridge.driver.service.IBridgeService;
@@ -32,12 +31,12 @@ public class BridgePlayer implements IBridgePlayer {
     @Override
     public void sendMessage(String message) {
         if (service == null) return;
-        sendPacket(new PacketPlayerMessage(uniqueId, BridgeUtil.builder(message).replace("&", "§", "Â").buildIndex(0)));
+        sendPacket(new PacketPlayerMessage(uniqueId, message));
     }
 
     @Override
     public void kick(String reason) {
-        sendPacket(new PacketPlayerKick(uniqueId, BridgeUtil.builder(reason).replace("&", "§", "Â").buildIndex(0)));
+        sendPacket(new PacketPlayerKick(uniqueId, reason));
     }
 
     @Override
@@ -47,8 +46,7 @@ public class BridgePlayer implements IBridgePlayer {
 
     @Override
     public void sendTitle(String title, String subtitle, int fadeIn, int stay, int fadeOut) {
-        String[] strings = BridgeUtil.builder(title, subtitle).replace("&", "§", "Â").build();
-        sendPacket(new PacketPlayerTitle(uniqueId, strings[0], strings[1], fadeIn, stay, fadeOut));
+        sendPacket(new PacketPlayerTitle(uniqueId, title, subtitle, fadeIn, stay, fadeOut));
     }
 
     @Override

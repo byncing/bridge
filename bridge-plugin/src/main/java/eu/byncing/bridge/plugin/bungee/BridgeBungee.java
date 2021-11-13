@@ -18,10 +18,7 @@ public class BridgeBungee extends Plugin {
     public void onEnable() {
         instance = this;
         server = new BridgeServer();
-
         ProxyServer proxy = ProxyServer.getInstance();
-        BridgeData config = server.getConfig().getData();
-
         proxy.getPluginManager().registerCommand(this, new BridgeCommand(server));
         proxy.getPluginManager().registerListener(this, new BridgeListener(server));
 
