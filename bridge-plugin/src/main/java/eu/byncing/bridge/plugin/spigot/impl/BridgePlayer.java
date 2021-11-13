@@ -25,12 +25,12 @@ public class BridgePlayer implements IBridgePlayer {
 
     @Override
     public void sendPacket(Packet packet) {
+        if (service == null) return;
         service.sendPacket(packet);
     }
 
     @Override
     public void sendMessage(String message) {
-        if (service == null) return;
         sendPacket(new PacketPlayerMessage(uniqueId, message));
     }
 
