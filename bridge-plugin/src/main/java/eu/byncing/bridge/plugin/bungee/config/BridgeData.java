@@ -37,7 +37,7 @@ public class BridgeData {
 
             public String[] info = new String[]{};
 
-            public String name = "§7» §c§o1.0.0-BETA";
+            public String name = "§7» §c§oMaintenance";
         }
     }
 
