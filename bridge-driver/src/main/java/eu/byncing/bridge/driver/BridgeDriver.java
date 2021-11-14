@@ -3,6 +3,7 @@ package eu.byncing.bridge.driver;
 import eu.byncing.bridge.driver.event.IEventManager;
 import eu.byncing.bridge.driver.player.PlayerManager;
 import eu.byncing.bridge.driver.protocol.PacketManager;
+import eu.byncing.bridge.driver.scheduler.Scheduler;
 import eu.byncing.bridge.driver.service.IBridgeService;
 import eu.byncing.bridge.driver.service.ServiceManager;
 
@@ -11,6 +12,8 @@ public class BridgeDriver implements IBridgeDriver {
     private static final IBridgeDriver INSTANCE = new BridgeDriver();
 
     private IBridgeService internalService;
+
+    private final Scheduler scheduler = new Scheduler();
 
     private final PacketManager packetManager = new PacketManager();
     private final ServiceManager serviceManager = new ServiceManager();
@@ -28,6 +31,11 @@ public class BridgeDriver implements IBridgeDriver {
 
     public void setInternalService(IBridgeService internalService) {
         this.internalService = internalService;
+    }
+
+    @Override
+    public Scheduler getScheduler() {
+        return scheduler;
     }
 
     @Override
