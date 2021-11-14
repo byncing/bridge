@@ -1,9 +1,7 @@
 package eu.byncing.bridge.plugin.bungee;
 
 import eu.byncing.bridge.driver.BridgeDriver;
-import eu.byncing.bridge.driver.scheduler.Scheduler;
 import eu.byncing.bridge.plugin.bungee.commands.BridgeCommand;
-import eu.byncing.bridge.plugin.bungee.config.BridgeData;
 import eu.byncing.bridge.plugin.bungee.listener.BridgeListener;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;

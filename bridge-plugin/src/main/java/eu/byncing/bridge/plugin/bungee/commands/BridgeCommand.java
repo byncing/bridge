@@ -73,7 +73,7 @@ public class BridgeCommand extends Command implements TabExecutor {
                     server.sendMessage(sender, "§7Player " + args[2] + " was removed from the whitelist!");
                     IBridgePlayer player = instance.getPlayerManager().getPlayer(args[2]);
                     if (player == null) return;
-                    if (!player.hasPermission(config.getData().connectionBypass))
+                    if (player.hasPermission(config.getData().connectionBypass))
                         player.kick(config.getData().maintenanceMessage);
                 }
                 config.save();
@@ -159,7 +159,7 @@ public class BridgeCommand extends Command implements TabExecutor {
                     config.save();
 
                     instance.getPlayerManager().getPlayers().forEach(player -> {
-                        if (!player.hasPermission(config.getData().connectionBypass)) {
+                        if (player.hasPermission(config.getData().connectionBypass)) {
                             player.kick(config.getData().maintenanceMessage);
                         }
                     });

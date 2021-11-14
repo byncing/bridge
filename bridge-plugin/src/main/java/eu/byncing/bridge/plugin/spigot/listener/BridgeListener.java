@@ -3,7 +3,6 @@ package eu.byncing.bridge.plugin.spigot.listener;
 import eu.byncing.bridge.driver.BridgeDriver;
 import eu.byncing.bridge.driver.protocol.packets.player.PacketPlayerConnect;
 import eu.byncing.bridge.driver.protocol.packets.player.PacketPlayerDisconnect;
-import eu.byncing.bridge.driver.scheduler.Scheduler;
 import eu.byncing.bridge.plugin.BridgeService;
 import eu.byncing.bridge.plugin.spigot.BridgeClient;
 import eu.byncing.bridge.plugin.spigot.impl.BridgePlayer;
