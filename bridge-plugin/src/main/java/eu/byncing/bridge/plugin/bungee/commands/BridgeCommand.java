@@ -2,6 +2,7 @@ package eu.byncing.bridge.plugin.bungee.commands;
 
 import eu.byncing.bridge.driver.BridgeDriver;
 import eu.byncing.bridge.driver.BridgeUtil;
+import eu.byncing.bridge.driver.IBridgeDriver;
 import eu.byncing.bridge.driver.player.IBridgePlayer;
 import eu.byncing.bridge.driver.service.IBridgeService;
 import eu.byncing.bridge.plugin.bungee.BridgeServer;
@@ -24,7 +25,7 @@ public class BridgeCommand extends Command implements TabExecutor {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        BridgeDriver instance = BridgeDriver.getInstance();
+        IBridgeDriver instance = BridgeDriver.getInstance();
         if (args.length == 0) {
             server.sendMessage(sender, "§7/bridge <reload>");
             server.sendMessage(sender, "§7/bridge <maintenance> <true, false>");

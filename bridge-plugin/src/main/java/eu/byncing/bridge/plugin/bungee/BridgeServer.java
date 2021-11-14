@@ -1,7 +1,7 @@
 package eu.byncing.bridge.plugin.bungee;
 
 import eu.byncing.bridge.driver.BridgeDriver;
-import eu.byncing.bridge.driver.event.EventManager;
+import eu.byncing.bridge.plugin.EventManager;
 import eu.byncing.bridge.driver.player.PlayerManager;
 import eu.byncing.bridge.driver.protocol.PacketManager;
 import eu.byncing.bridge.driver.service.IBridgeService;
@@ -23,18 +23,20 @@ import java.util.List;
 
 public class BridgeServer extends NetServer {
 
-    private final BridgeDriver driver = BridgeDriver.getInstance();
+    private final BridgeDriver driver = (BridgeDriver) BridgeDriver.getInstance();
 
     private final BridgeConfig config = new BridgeConfig();
 
     private final PacketManager packets = driver.getPacketManager();
     private final PlayerManager players = driver.getPlayerManager();
-    private final EventManager events = driver.getEventManager();
+    private EventManager events;
     private final ServiceManager services = driver.getServiceManager();
 
     public BridgeServer() {
         try {
             this.packets.register(new ServiceHandler(this), new PlayerConnectionHandler(this), new PlayerHandler(this));
+            this.driver.setEventManager(new EventManager());
+            this.events = (EventManager) driver.getEventManager();
             this.option(NetOption.BUFFER_SIZE, 2024).init(channel -> channel.getPipeline().handle(new ServerHandler(this))).bind(new InetSocketAddress(config.getPort()));
         } catch (IOException e) {
             e.printStackTrace();

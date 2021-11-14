@@ -23,6 +23,9 @@ public class ServiceConnectionHandler implements IPacketHandler<Packet> {
         if (packet instanceof PacketServiceLogin) {
             PacketServiceLogin login = (PacketServiceLogin) packet;
             IBridgeService service = client.getServices().getService(login.getName());
+            client.getServices().getServices().add(service);
+            if (service.equals(client.getInternalService())) client.getDriver().setInternalService(service);
+            client.getEvents().setService(service);
             client.sendMessage("Channel" + channel.getRemoteAddress() + " Service " + service.getName() + " has login.");
             client.getEvents().call(new ServiceLoginEvent(service));
         }

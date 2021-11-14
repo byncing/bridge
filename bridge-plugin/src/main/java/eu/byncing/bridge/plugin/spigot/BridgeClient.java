@@ -1,11 +1,11 @@
 package eu.byncing.bridge.plugin.spigot;
 
 import eu.byncing.bridge.driver.BridgeDriver;
-import eu.byncing.bridge.driver.event.EventManager;
 import eu.byncing.bridge.driver.player.PlayerManager;
 import eu.byncing.bridge.driver.protocol.PacketManager;
 import eu.byncing.bridge.driver.service.IBridgeService;
 import eu.byncing.bridge.driver.service.ServiceManager;
+import eu.byncing.bridge.plugin.EventManager;
 import eu.byncing.bridge.plugin.spigot.config.BridgeConfig;
 import eu.byncing.bridge.plugin.spigot.handles.player.PlayerConnectionHandler;
 import eu.byncing.bridge.plugin.spigot.handles.player.PlayerHandler;
@@ -22,13 +22,14 @@ import java.net.InetSocketAddress;
 
 public class BridgeClient extends NetClient {
 
-    private final BridgeDriver driver = BridgeDriver.getInstance();
+    private final BridgeDriver driver = (BridgeDriver) BridgeDriver.getInstance();
 
     private final BridgeConfig config = new BridgeConfig();
 
     private final PacketManager packets = driver.getPacketManager();
     private final PlayerManager players = driver.getPlayerManager();
-    private final EventManager events = driver.getEventManager();
+    private EventManager events;
+
     private final ServiceManager services = driver.getServiceManager();
 
     private Server server;
@@ -43,6 +44,8 @@ public class BridgeClient extends NetClient {
             this.server = server;
             this.packets.register(new PlayerNetConnectionHandler(this), new PlayerConnectionHandler(this), new PlayerHandler(this));
             this.packets.register(new ServiceConnectionHandler(this), new ServiceHandler(this));
+            this.driver.setEventManager(new EventManager());
+            this.events = (EventManager) driver.getEventManager();
             this.init(channel -> channel.getPipeline().handle(new ClientHandler(this))).connect(new InetSocketAddress(config.getHost(), config.getPort()));
         } catch (IOException e) {
             sendMessage("Channel/" + config.getHost() + ":" + config.getPort() + " §cfailed to connect");
