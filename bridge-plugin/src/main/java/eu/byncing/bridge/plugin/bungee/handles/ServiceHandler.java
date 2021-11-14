@@ -58,7 +58,6 @@ public class ServiceHandler implements IPacketHandler<Packet> {
                     server.sendPacket(new PacketServiceLogin(service.getName(), service.getMotd(), service.getOnlineCount(), service.getMaxCount()));
 
                 } else {
-                    System.out.println(channel.isConnected());
                     channel.sendPacket(new PacketServiceAuthFailed(BridgeUtil.builder("§cThe specified key does not match :/").replace("&", "§", "Â").buildIndex(0)));
                     channel.close();
                 }
