@@ -1,5 +1,6 @@
 package eu.byncing.bridge.plugin.spigot.listener;
 
+import eu.byncing.bridge.driver.BridgeDriver;
 import eu.byncing.bridge.driver.protocol.packets.player.PacketPlayerConnect;
 import eu.byncing.bridge.driver.protocol.packets.player.PacketPlayerDisconnect;
 import eu.byncing.bridge.driver.scheduler.Scheduler;
@@ -21,7 +22,7 @@ public class BridgeListener implements Listener {
 
     @EventHandler
     public void handleJoin(PlayerJoinEvent event) {
-        Scheduler.schedule(() -> {
+        BridgeDriver.getInstance().getScheduler().runDelay(() -> {
             BridgeService service = (BridgeService) client.getInternalService();
             BridgePlayer player = (BridgePlayer) client.getPlayers().getPlayer(event.getPlayer().getUniqueId());
             if (player == null) return;

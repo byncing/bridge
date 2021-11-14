@@ -1,5 +1,6 @@
 package eu.byncing.bridge.plugin.bungee;
 
+import eu.byncing.bridge.driver.BridgeDriver;
 import eu.byncing.bridge.driver.scheduler.Scheduler;
 import eu.byncing.bridge.plugin.bungee.commands.BridgeCommand;
 import eu.byncing.bridge.plugin.bungee.config.BridgeData;
@@ -22,7 +23,7 @@ public class BridgeBungee extends Plugin {
         proxy.getPluginManager().registerCommand(this, new BridgeCommand(server));
         proxy.getPluginManager().registerListener(this, new BridgeListener(server));
 
-        Scheduler.schedule(() -> ProxyServer.getInstance().getPlayers().forEach(player -> {
+        BridgeDriver.getInstance().getScheduler().runTimer(() -> ProxyServer.getInstance().getPlayers().forEach(player -> {
             String[] strings = server.getConfig().getTabStorage().update(player.getUniqueId());
             player.setTabHeader(new TextComponent(strings[0]), new TextComponent(strings[1]));
         }), 1000, 1000);

@@ -1,5 +1,6 @@
 package eu.byncing.bridge.plugin.spigot;
 
+import eu.byncing.bridge.driver.BridgeDriver;
 import eu.byncing.bridge.driver.protocol.packets.player.PacketPlayerDisconnect;
 import eu.byncing.bridge.driver.protocol.packets.player.PacketPlayerUpdate;
 import eu.byncing.bridge.driver.protocol.packets.service.PacketServiceUpdate;
@@ -22,7 +23,7 @@ public class BridgeSpigot extends JavaPlugin {
         Server server = this.getServer();
         client = new BridgeClient(server);
         server.getPluginManager().registerEvents(new BridgeListener(client), this);
-        Scheduler.schedule(() -> {
+        BridgeDriver.getInstance().getScheduler().runTimer(() -> {
             if (client != null && client.isConnected()) {
                 IBridgeService service = client.getInternalService();
                 if (service != null) {
