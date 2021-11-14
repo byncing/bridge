@@ -2,6 +2,7 @@ package eu.byncing.bridge.plugin.bungee.handles.player;
 
 import eu.byncing.bridge.driver.BridgeUtil;
 import eu.byncing.bridge.driver.event.player.PlayerKickEvent;
+import eu.byncing.bridge.driver.event.player.PlayerServiceChangeEvent;
 import eu.byncing.bridge.driver.event.player.PlayerTitleEvent;
 import eu.byncing.bridge.driver.event.player.PlayerUpdateEvent;
 import eu.byncing.bridge.driver.player.IBridgePlayer;
@@ -56,6 +57,7 @@ public class PlayerHandler implements IPacketHandler<Packet> {
             IBridgeService service = server.getServices().getService(change.getService());
             if (service == null) return;
             bridgePlayer.connect(service);
+            server.getEvents().call(new PlayerServiceChangeEvent(service, bridgePlayer));
         }
         if (packet instanceof PacketPlayerTitle) {
             PacketPlayerTitle title = (PacketPlayerTitle) packet;

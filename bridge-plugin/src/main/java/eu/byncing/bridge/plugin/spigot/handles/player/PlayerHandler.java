@@ -1,22 +1,17 @@
 package eu.byncing.bridge.plugin.spigot.handles.player;
 
 import eu.byncing.bridge.driver.event.player.PlayerKickEvent;
+import eu.byncing.bridge.driver.event.player.PlayerServiceChangeEvent;
 import eu.byncing.bridge.driver.event.player.PlayerTitleEvent;
 import eu.byncing.bridge.driver.event.player.PlayerUpdateEvent;
 import eu.byncing.bridge.driver.player.IBridgePlayer;
 import eu.byncing.bridge.driver.protocol.IPacketHandler;
-import eu.byncing.bridge.driver.protocol.packets.player.PacketPlayerKick;
-import eu.byncing.bridge.driver.protocol.packets.player.PacketPlayerMessage;
-import eu.byncing.bridge.driver.protocol.packets.player.PacketPlayerTitle;
-import eu.byncing.bridge.driver.protocol.packets.player.PacketPlayerUpdate;
+import eu.byncing.bridge.driver.protocol.packets.player.*;
 import eu.byncing.bridge.driver.service.IBridgeService;
 import eu.byncing.bridge.plugin.spigot.BridgeClient;
-import eu.byncing.bridge.plugin.spigot.BridgeSpigot;
 import eu.byncing.bridge.plugin.spigot.impl.BridgePlayer;
 import eu.byncing.net.api.channel.IChannel;
 import eu.byncing.net.api.protocol.Packet;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 
 public class PlayerHandler implements IPacketHandler<Packet> {
 
@@ -43,18 +38,9 @@ public class PlayerHandler implements IPacketHandler<Packet> {
             player.update(update);
             client.getEvents().call(new PlayerUpdateEvent(player));
         }
-        if (packet instanceof PacketPlayerMessage) {
-            PacketPlayerMessage message = (PacketPlayerMessage) packet;
-            Player player = Bukkit.getPlayer(message.getUniqueId());
-            if (player == null) return;
-            player.sendMessage(message.getMessage());
-        }
         if (packet instanceof PacketPlayerKick) {
             PacketPlayerKick kick = (PacketPlayerKick) packet;
             IBridgePlayer bridgePlayer = client.getPlayers().getPlayer(kick.getUniqueId());
-            Player player = Bukkit.getPlayer(kick.getUniqueId());
-            if (player == null) return;
-            Bukkit.getScheduler().runTask(BridgeSpigot.getInstance(), () -> player.kickPlayer(kick.getReason()));
             client.getEvents().call(new PlayerKickEvent(bridgePlayer));
         }
         if (packet instanceof PacketPlayerTitle) {
@@ -63,10 +49,18 @@ public class PlayerHandler implements IPacketHandler<Packet> {
             if (player == null) return;
             client.getEvents().call(new PlayerTitleEvent(player, title.getTitle(), title.getSubtitle(), title.getFadeIn(), title.getStay(), title.getFadeOut()));
         }
+        if (packet instanceof PacketPlayerServiceChange) {
+            PacketPlayerServiceChange change = (PacketPlayerServiceChange) packet;
+            IBridgeService service = client.getServices().getService(change.getService());
+            if (service == null) return;
+            IBridgePlayer player = client.getPlayers().getPlayer(change.getUniqueId());
+            if (player == null) return;
+            client.getEvents().call(new PlayerServiceChangeEvent(service, player));
+        }
     }
 
     @Override
     public Class<? extends Packet>[] getClasses() {
-        return new Class[]{PacketPlayerUpdate.class, PacketPlayerMessage.class, PacketPlayerKick.class, PacketPlayerTitle.class};
+        return new Class[]{PacketPlayerUpdate.class, PacketPlayerMessage.class, PacketPlayerKick.class, PacketPlayerTitle.class, PacketPlayerServiceChange.class};
     }
 }

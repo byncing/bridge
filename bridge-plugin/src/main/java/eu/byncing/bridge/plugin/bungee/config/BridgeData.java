@@ -6,6 +6,7 @@ import java.util.List;
 public class BridgeData {
 
     public String name = "InternalBridge";
+    public String fallback = null;
     public List<String> whitelist = new ArrayList<>();
     public boolean maintenance = true;
     public int maxCount = 55;
@@ -14,6 +15,7 @@ public class BridgeData {
     public Motd motd = new Motd();
 
     public String fullMessage = "§cThe network is full!";
+    public String serviceOffline = "§cService %service% is offline!";
     public String maintenanceMessage = "§cThe network is in maintenance!";
     public String commandBypass = "bridge.command.bypass", connectionBypass = "bridge.connection.bypass";
 

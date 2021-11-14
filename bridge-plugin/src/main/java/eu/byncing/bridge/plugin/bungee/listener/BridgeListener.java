@@ -6,6 +6,7 @@ import eu.byncing.bridge.driver.player.IBridgePlayer;
 import eu.byncing.bridge.driver.protocol.packets.player.PacketPlayerNetConnect;
 import eu.byncing.bridge.driver.protocol.packets.player.PacketPlayerNetDisconnect;
 import eu.byncing.bridge.driver.scheduler.Scheduler;
+import eu.byncing.bridge.driver.service.IBridgeService;
 import eu.byncing.bridge.plugin.bungee.BridgeServer;
 import eu.byncing.bridge.plugin.bungee.config.BridgeConfig;
 import eu.byncing.bridge.plugin.bungee.config.BridgeData;
@@ -13,13 +14,15 @@ import eu.byncing.bridge.plugin.bungee.impl.BridgePlayer;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.ServerPing;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
-import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.event.ProxyPingEvent;
+import net.md_5.bungee.api.event.ServerConnectEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
+import net.md_5.bungee.event.EventPriority;
 
 public class BridgeListener implements Listener {
 
@@ -27,34 +30,6 @@ public class BridgeListener implements Listener {
 
     public BridgeListener(BridgeServer server) {
         this.server = server;
-    }
-
-    @EventHandler
-    public void handleLogin(PostLoginEvent event) {
-        Scheduler.schedule(() -> {
-            ProxiedPlayer proxiedPlayer = event.getPlayer();
-            IBridgePlayer player = new BridgePlayer(proxiedPlayer.getUniqueId(), proxiedPlayer.getName(), null);
-            server.sendMessage("Player " + player.getName() + " has connected.");
-            server.getPlayers().getPlayers().add(player);
-            server.getEvents().call(new PlayerNetConnectEvent(player));
-            server.sendPacket(new PacketPlayerNetConnect(player.getUniqueId(), player.getName()));
-
-            int onlineCount = ProxyServer.getInstance().getOnlineCount();
-            BridgeData info = server.getConfig().getData();
-
-            if (info.maintenance) {
-                if (info.isWhitelist(player.getName())) return;
-                if (!proxiedPlayer.hasPermission(info.commandBypass)) {
-                    proxiedPlayer.disconnect(new TextComponent(server.getConfig().getData().maintenanceMessage));
-                    return;
-                }
-            }
-            if (onlineCount > info.maxCount) {
-                if (!proxiedPlayer.hasPermission(info.connectionBypass)) {
-                    proxiedPlayer.disconnect(new TextComponent(server.getConfig().getData().fullMessage));
-                }
-            }
-        });
     }
 
     @EventHandler
@@ -73,11 +48,54 @@ public class BridgeListener implements Listener {
         event.setResponse(response);
     }
 
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void handle(ServerConnectEvent event) {
+        if (event.getReason() == ServerConnectEvent.Reason.JOIN_PROXY) {
+            ProxiedPlayer proxiedPlayer = event.getPlayer();
+            BridgeData data = server.getConfig().getData();
+            IBridgeService service = server.getServices().getService(event.getTarget().getName());
+
+            if (data.fallback != null) service = server.getServices().getService(data.fallback);
+
+            if (service == null) {
+                event.setCancelled(true);
+                proxiedPlayer.disconnect(new TextComponent(data.serviceOffline.replace("%service%", (data.fallback == null ? event.getTarget().getName() : data.fallback))));
+                return;
+            }
+
+            ServerInfo info = ProxyServer.getInstance().getServerInfo(service.getName());
+            if (event.getTarget() != info) event.setTarget(info);
+            if (data.fallback != null) event.setTarget(event.getTarget());
+
+            IBridgePlayer player = new BridgePlayer(proxiedPlayer.getUniqueId(), proxiedPlayer.getName(), service);
+            server.sendMessage("Player " + player.getName() + " has connected.");
+            server.getPlayers().getPlayers().add(player);
+            server.getEvents().call(new PlayerNetConnectEvent(player, service));
+            server.sendPacket(new PacketPlayerNetConnect(player.getUniqueId(), player.getName(), service.getName()));
+
+            int onlineCount = ProxyServer.getInstance().getOnlineCount();
+
+            if (data.maintenance) {
+                if (data.isWhitelist(player.getName())) return;
+                if (!proxiedPlayer.hasPermission(data.commandBypass)) {
+                    proxiedPlayer.disconnect(new TextComponent(server.getConfig().getData().maintenanceMessage));
+                    return;
+                }
+            }
+            if (onlineCount > data.maxCount) {
+                if (!proxiedPlayer.hasPermission(data.connectionBypass)) {
+                    proxiedPlayer.disconnect(new TextComponent(server.getConfig().getData().fullMessage));
+                }
+            }
+        }
+    }
+
     @EventHandler
     public void handleDisconnect(PlayerDisconnectEvent event) {
         PendingConnection connection = event.getPlayer().getPendingConnection();
         Scheduler.schedule(() -> {
             IBridgePlayer player = server.getPlayers().getPlayer(connection.getUniqueId());
+            if (player == null) return;
             server.sendMessage("Player " + player.getName() + " has disconnected.");
             server.getPlayers().getPlayers().remove(player);
             server.getEvents().call(new PlayerNetDisconnectEvent(player));

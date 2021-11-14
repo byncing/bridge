@@ -2,10 +2,7 @@ package eu.byncing.bridge.plugin.bungee.impl;
 
 import eu.byncing.bridge.driver.BridgeDriver;
 import eu.byncing.bridge.driver.player.IBridgePlayer;
-import eu.byncing.bridge.driver.protocol.packets.player.PacketPlayerKick;
-import eu.byncing.bridge.driver.protocol.packets.player.PacketPlayerMessage;
-import eu.byncing.bridge.driver.protocol.packets.player.PacketPlayerTitle;
-import eu.byncing.bridge.driver.protocol.packets.player.PacketPlayerUpdate;
+import eu.byncing.bridge.driver.protocol.packets.player.*;
 import eu.byncing.bridge.driver.service.IBridgeService;
 import eu.byncing.net.api.protocol.Packet;
 import net.md_5.bungee.api.ProxyServer;
@@ -37,11 +34,19 @@ public class BridgePlayer implements IBridgePlayer {
 
     @Override
     public void sendMessage(String message) {
+        ProxiedPlayer player = ProxyServer.getInstance().getPlayer(uniqueId);
+        if (player == null) return;
+        player.sendMessage(new TextComponent(message));
+
         sendPacket(new PacketPlayerMessage(uniqueId, message));
     }
 
     @Override
     public void kick(String reason) {
+        ProxiedPlayer player = ProxyServer.getInstance().getPlayer(uniqueId);
+        if (player == null) return;
+        player.disconnect(new TextComponent(reason));
+
         sendPacket(new PacketPlayerKick(uniqueId, reason));
     }
 
@@ -51,12 +56,13 @@ public class BridgePlayer implements IBridgePlayer {
         ServerInfo info = ProxyServer.getInstance().getServerInfo(service.getName());
         if (info == null) return;
         player.connect(info);
+        sendPacket(new PacketPlayerServiceChange(uniqueId, service.getName()));
     }
 
     @Override
     public void sendTitle(String title, String subtitle, int fadeIn, int stay, int fadeOut) {
         ProxiedPlayer player = ProxyServer.getInstance().getPlayer(uniqueId);
-        if (player == null && service == null) return;
+        if (player == null) return;
         Title packet = ProxyServer.getInstance().createTitle();
         packet.title(new TextComponent(title));
         packet.subTitle(new TextComponent(subtitle));

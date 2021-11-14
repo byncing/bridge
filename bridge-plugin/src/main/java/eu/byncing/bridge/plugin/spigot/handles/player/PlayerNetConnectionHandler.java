@@ -6,6 +6,7 @@ import eu.byncing.bridge.driver.player.IBridgePlayer;
 import eu.byncing.bridge.driver.protocol.IPacketHandler;
 import eu.byncing.bridge.driver.protocol.packets.player.PacketPlayerNetConnect;
 import eu.byncing.bridge.driver.protocol.packets.player.PacketPlayerNetDisconnect;
+import eu.byncing.bridge.driver.service.IBridgeService;
 import eu.byncing.bridge.plugin.spigot.BridgeClient;
 import eu.byncing.bridge.plugin.spigot.impl.BridgePlayer;
 import eu.byncing.net.api.channel.IChannel;
@@ -23,10 +24,13 @@ public class PlayerNetConnectionHandler implements IPacketHandler<Packet> {
     public void handle(IChannel channel, Packet packet) {
         if (packet instanceof PacketPlayerNetConnect) {
             PacketPlayerNetConnect connect = (PacketPlayerNetConnect) packet;
-            IBridgePlayer player = new BridgePlayer(connect.getUniqueId(), connect.getName(), null);
+            IBridgeService service = client.getServices().getService(connect.getService());
+            BridgePlayer player = new BridgePlayer(connect.getUniqueId(), connect.getName(), service);
+            service.getPlayers().add(player);
+            player.setService(service);
             client.sendMessage("Player " + player.getName() + " has connected.");
             client.getPlayers().getPlayers().add(player);
-            client.getEvents().call(new PlayerNetConnectEvent(player));
+            client.getEvents().call(new PlayerNetConnectEvent(player, service));
         }
         if (packet instanceof PacketPlayerNetDisconnect) {
             PacketPlayerNetDisconnect disconnect = (PacketPlayerNetDisconnect) packet;
