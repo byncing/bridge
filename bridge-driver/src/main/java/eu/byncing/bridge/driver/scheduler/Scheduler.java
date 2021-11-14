@@ -2,74 +2,70 @@ package eu.byncing.bridge.driver.scheduler;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class Scheduler {
 
-    private static final List<SchedulerFuture> futures = new ArrayList<>();
+    private final List<SchedulerTask> tasks = new ArrayList<>();
 
-    private static final Timer timer = new Timer();
-
-    public static void schedule(Runnable runnable) {
-        SchedulerFuture future = new SchedulerFuture(futures.size(), runnable);
-        new Thread(runnable).start();
+    public SchedulerTask runAsync(Runnable runnable) {
+        SchedulerTask task = new SchedulerTask(tasks.size(), runnable);
+        task.run();
+        cancel(task.getId());
+        return task;
     }
 
-    public static SchedulerFuture schedule(Runnable runnable, long delay, long period) {
-        SchedulerFuture future = new SchedulerFuture(futures.size(), runnable);
-        futures.add(future);
+    public SchedulerTask runTimer(Runnable runnable, int delay, int period) {
+        return run(new SchedulerTask(tasks.size(), runnable), delay, period);
+    }
 
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                if (!future.isRunning()) {
-                    cancel();
-                    cancelFuture(future);
+    public SchedulerTask runDelay(Runnable runnable, int delay) {
+        return run(new SchedulerTask(tasks.size(), runnable), delay, 0);
+    }
+
+    public SchedulerTask run(SchedulerTask task, int delay, int period) {
+        new Thread(() -> {
+            long current = System.currentTimeMillis();
+
+            tasks.add(task);
+
+            while (task.isRunning()) {
+                if (System.currentTimeMillis() - current > delay) {
+
+                    if (period <= 0) {
+                        if (task.isRunning()) task.run();
+                        return;
+                    }
+                    current = System.currentTimeMillis();
+                    while (task.isRunning()) {
+                        if (System.currentTimeMillis() - current > period) {
+                            current += period;
+                            if (task.isRunning()) task.run();
+                        }
+                    }
                     return;
                 }
-                future.run();
             }
-        }, delay, period);
-        return future;
+            cancel(task.getId());
+        }).start();
+        return task;
     }
 
-    public static SchedulerFuture schedule(Runnable runnable, long delay) {
-        SchedulerFuture future = new SchedulerFuture(futures.size(), runnable);
-        futures.add(future);
-
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                future.run();
-                cancel();
-                cancelFuture(future);
-            }
-        }, delay);
-        return future;
+    public void cancel(int id) {
+        SchedulerTask task = getTask(id);
+        if (task == null) return;
+        task.cancel();
+        tasks.remove(task);
     }
 
-    public static void cancelFuture(SchedulerFuture future) {
-        futures.remove(future);
-        future.cancel();
-        //if (futures.size() == 0) timer.cancel();
+    public void cancel() {
+        tasks.forEach(task -> cancel(task.getId()));
     }
 
-    public static void cancelFuture(int id) {
-        SchedulerFuture schedulerFuture = futures.stream().filter(future -> future.getId() == id).findFirst().orElse(null);
-        cancelFuture(schedulerFuture);
+    public SchedulerTask getTask(int id) {
+        return tasks.stream().filter(tasks -> tasks.getId() == id).findFirst().orElse(null);
     }
 
-    public static void cancels() {
-        futures.forEach(SchedulerFuture::cancel);
-        timer.cancel();
-    }
-
-    public static List<SchedulerFuture> getFutures() {
-        return futures;
-    }
-
-    public static Timer getTimer() {
-        return timer;
+    public List<SchedulerTask> getTasks() {
+        return tasks;
     }
 }
