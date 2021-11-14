@@ -27,5 +27,9 @@ public interface IBridgePlayer extends IPacketSender, ICommandSender {
 
     String getName();
 
+    PlayerAddress getAddress();
+
+    int getPing();
+
     IBridgeService getService();
 }

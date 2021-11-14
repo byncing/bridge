@@ -4,6 +4,7 @@ import eu.byncing.bridge.driver.BridgeDriver;
 import eu.byncing.bridge.driver.event.player.PlayerNetConnectEvent;
 import eu.byncing.bridge.driver.event.player.PlayerNetDisconnectEvent;
 import eu.byncing.bridge.driver.player.IBridgePlayer;
+import eu.byncing.bridge.driver.player.PlayerAddress;
 import eu.byncing.bridge.driver.protocol.packets.player.PacketPlayerNetConnect;
 import eu.byncing.bridge.driver.protocol.packets.player.PacketPlayerNetDisconnect;
 import eu.byncing.bridge.driver.service.IBridgeService;
@@ -67,7 +68,8 @@ public class BridgeListener implements Listener {
             if (event.getTarget() != info) event.setTarget(info);
             if (data.fallback != null) event.setTarget(event.getTarget());
 
-            IBridgePlayer player = new BridgePlayer(proxiedPlayer.getUniqueId(), proxiedPlayer.getName(), service);
+            String[] s = proxiedPlayer.getSocketAddress().toString().substring(1).split(":");
+            IBridgePlayer player = new BridgePlayer(proxiedPlayer.getUniqueId(), proxiedPlayer.getName(), new PlayerAddress(s[0], Integer.parseInt(s[1])), service);
 
             String[] strings = server.getConfig().getTabStorage().update(player.getUniqueId());
             proxiedPlayer.setTabHeader(new TextComponent(strings[0]), new TextComponent(strings[1]));
@@ -75,7 +77,7 @@ public class BridgeListener implements Listener {
             server.sendMessage("Player " + player.getName() + " has connected.");
             server.getPlayers().getPlayers().add(player);
             server.getEvents().call(new PlayerNetConnectEvent(player, service));
-            server.sendPacket(new PacketPlayerNetConnect(player.getUniqueId(), player.getName(), service.getName()));
+            server.sendPacket(new PacketPlayerNetConnect(player.getUniqueId(), player.getName(), service.getName(), player.getAddress()));
 
             int onlineCount = ProxyServer.getInstance().getOnlineCount();
 

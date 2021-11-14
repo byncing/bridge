@@ -28,7 +28,7 @@ public class PlayerHandler implements IPacketHandler<Packet> {
             IBridgeService service = client.getServices().getService(update.getService());
             BridgePlayer player;
             if (client.getPlayers().getPlayer(update.getUniqueId()) == null) {
-                player = new BridgePlayer(update.getUniqueId(), update.getName(), service);
+                player = new BridgePlayer(update.getUniqueId(), update.getName(), update.getAddress(), service);
                 client.getPlayers().getPlayers().add(player);
                 service.getPlayers().add(player);
                 client.getEvents().call(new PlayerUpdateEvent(player));

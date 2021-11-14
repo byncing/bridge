@@ -2,6 +2,7 @@ package eu.byncing.bridge.plugin.bungee.impl;
 
 import eu.byncing.bridge.driver.BridgeDriver;
 import eu.byncing.bridge.driver.player.IBridgePlayer;
+import eu.byncing.bridge.driver.player.PlayerAddress;
 import eu.byncing.bridge.driver.protocol.packets.player.*;
 import eu.byncing.bridge.driver.service.IBridgeService;
 import eu.byncing.net.api.protocol.Packet;
@@ -11,6 +12,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
+import java.net.InetSocketAddress;
 import java.util.UUID;
 
 public class BridgePlayer implements IBridgePlayer {
@@ -18,11 +20,16 @@ public class BridgePlayer implements IBridgePlayer {
     private final UUID uniqueId;
     private String name;
 
+    private final PlayerAddress address;
+
+    private int ping;
+
     private IBridgeService service;
 
-    public BridgePlayer(UUID uniqueId, String name, IBridgeService service) {
+    public BridgePlayer(UUID uniqueId, String name, PlayerAddress address, IBridgeService service) {
         this.uniqueId = uniqueId;
         this.name = name;
+        this.address = address;
         this.service = service;
     }
 
@@ -77,13 +84,14 @@ public class BridgePlayer implements IBridgePlayer {
     @Override
     public boolean hasPermission(String permission) {
         ProxiedPlayer player = ProxyServer.getInstance().getPlayer(uniqueId);
-        if (player == null) return false;
-        return player.hasPermission(permission);
+        if (player == null) return true;
+        return !player.hasPermission(permission);
     }
 
     public void update(PacketPlayerUpdate update) {
         name = update.getName();
         service = BridgeDriver.getInstance().getServiceManager().getService(update.getService());
+        ping = update.getPing();
     }
 
     @Override
@@ -98,6 +106,16 @@ public class BridgePlayer implements IBridgePlayer {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Override
+    public PlayerAddress getAddress() {
+        return address;
+    }
+
+    @Override
+    public int getPing() {
+        return ping;
     }
 
     @Override

@@ -25,7 +25,7 @@ public class PlayerNetConnectionHandler implements IPacketHandler<Packet> {
         if (packet instanceof PacketPlayerNetConnect) {
             PacketPlayerNetConnect connect = (PacketPlayerNetConnect) packet;
             IBridgeService service = client.getServices().getService(connect.getService());
-            BridgePlayer player = new BridgePlayer(connect.getUniqueId(), connect.getName(), service);
+            BridgePlayer player = new BridgePlayer(connect.getUniqueId(), connect.getName(), connect.getAddress(), service);
             service.getPlayers().add(player);
             player.setService(service);
             client.sendMessage("Player " + player.getName() + " has connected.");

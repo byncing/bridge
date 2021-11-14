@@ -39,7 +39,7 @@ public class ServiceHandler implements IPacketHandler<Packet> {
                         return;
                     }
 
-                    if(ProxyServer.getInstance().getServerInfo(auth.getName()) == null) {
+                    if (ProxyServer.getInstance().getServerInfo(auth.getName()) == null) {
                         channel.sendPacket(new PacketServiceAuthFailed(BridgeUtil.builder("§cThe service is not entered in the bungee config!").replace("&", "§", "Â").buildIndex(0)));
                         channel.close();
                         return;
@@ -52,7 +52,7 @@ public class ServiceHandler implements IPacketHandler<Packet> {
                     server.getServices().getServices().forEach(service1 -> server.sendPacket(new PacketServiceUpdate(service1.getName(), service1.getMotd(), service1.getOnlineCount(), service1.getMaxCount())));
                     server.getPlayers().getPlayers().forEach(player -> {
                         if (player.getService() != null) {
-                            server.sendPacket(new PacketPlayerUpdate(player.getUniqueId(), player.getName(), player.getService().getName()));
+                            server.sendPacket(new PacketPlayerUpdate(player.getUniqueId(), player.getName(), player.getService().getName(), player.getPing(), player.getAddress()));
                         }
                     });
                     server.sendPacket(new PacketServiceLogin(service.getName(), service.getMotd(), service.getOnlineCount(), service.getMaxCount()));
