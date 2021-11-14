@@ -1,0 +1,7 @@
+main: eu.byncing.bridge.examples.bungee.BungeeExample
+name: bridge-example
+author: byncing
+version: 1.0.2-BETA
+
+depends:
+  - bridge-plugin

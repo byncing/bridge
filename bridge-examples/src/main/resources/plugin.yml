@@ -1,0 +1,7 @@
+main: eu.byncing.bridge.examples.spigot.SpigotExample
+name: bridge-example
+author: byncing
+version: 1.0.2-BETA
+
+depend:
+  - bridge-plugin
