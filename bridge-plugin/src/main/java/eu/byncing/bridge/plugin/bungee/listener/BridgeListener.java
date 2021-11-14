@@ -1,11 +1,11 @@
 package eu.byncing.bridge.plugin.bungee.listener;
 
+import eu.byncing.bridge.driver.BridgeDriver;
 import eu.byncing.bridge.driver.event.player.PlayerNetConnectEvent;
 import eu.byncing.bridge.driver.event.player.PlayerNetDisconnectEvent;
 import eu.byncing.bridge.driver.player.IBridgePlayer;
 import eu.byncing.bridge.driver.protocol.packets.player.PacketPlayerNetConnect;
 import eu.byncing.bridge.driver.protocol.packets.player.PacketPlayerNetDisconnect;
-import eu.byncing.bridge.driver.scheduler.Scheduler;
 import eu.byncing.bridge.driver.service.IBridgeService;
 import eu.byncing.bridge.plugin.bungee.BridgeServer;
 import eu.byncing.bridge.plugin.bungee.config.BridgeConfig;
@@ -68,6 +68,10 @@ public class BridgeListener implements Listener {
             if (data.fallback != null) event.setTarget(event.getTarget());
 
             IBridgePlayer player = new BridgePlayer(proxiedPlayer.getUniqueId(), proxiedPlayer.getName(), service);
+
+            String[] strings = server.getConfig().getTabStorage().update(player.getUniqueId());
+            proxiedPlayer.setTabHeader(new TextComponent(strings[0]), new TextComponent(strings[1]));
+
             server.sendMessage("Player " + player.getName() + " has connected.");
             server.getPlayers().getPlayers().add(player);
             server.getEvents().call(new PlayerNetConnectEvent(player, service));
@@ -93,7 +97,7 @@ public class BridgeListener implements Listener {
     @EventHandler
     public void handleDisconnect(PlayerDisconnectEvent event) {
         PendingConnection connection = event.getPlayer().getPendingConnection();
-        Scheduler.schedule(() -> {
+        BridgeDriver.getInstance().getScheduler().runDelay(() -> {
             IBridgePlayer player = server.getPlayers().getPlayer(connection.getUniqueId());
             if (player == null) return;
             server.sendMessage("Player " + player.getName() + " has disconnected.");
