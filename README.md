@@ -18,7 +18,6 @@
 5. Give the key to the spigot plugins bridge/bridge.json folder.
 6. Restart the spigot or reload.
 7. And let's go!
-
 &nbsp;
 
 &nbsp;
