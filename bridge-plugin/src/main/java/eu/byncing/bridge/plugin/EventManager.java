@@ -6,6 +6,7 @@ import eu.byncing.bridge.driver.event.BridgeHandler;
 import eu.byncing.bridge.driver.event.IBridgeListener;
 import eu.byncing.bridge.driver.event.IEvent;
 import eu.byncing.bridge.driver.event.IEventManager;
+import eu.byncing.bridge.driver.scheduler.Scheduler;
 import eu.byncing.bridge.driver.service.IBridgeService;
 
 import java.lang.reflect.InvocationTargetException;
@@ -37,24 +38,36 @@ public class EventManager implements IEventManager {
 
     @Override
     public void call(IBridgeListener listener, IEvent event) {
-        try {
-            IBridgeDriver instance = BridgeDriver.getInstance();
-            for (Method method : listener.getClass().getMethods()) {
-                BridgeHandler handler = method.getAnnotation(BridgeHandler.class);
-                if (handler == null) return;
-                Parameter[] parameters = method.getParameters();
-                if (Arrays.stream(parameters).anyMatch(parameter -> parameter.getType().equals(event.getClass()))) {
-                    if (handler.internal()) {
-                        if (service == null) {
-                            method.invoke(listener, event);
-                            return;
-                        }
-                        if (service.equals(instance.getInternalService())) method.invoke(listener, event);
+        IBridgeDriver instance = BridgeDriver.getInstance();
+        for (Method method : listener.getClass().getMethods()) {
+            BridgeHandler handler = method.getAnnotation(BridgeHandler.class);
+            if (handler == null) return;
+            Parameter[] parameters = method.getParameters();
+            if (Arrays.stream(parameters).anyMatch(parameter -> parameter.getType().equals(event.getClass()))) {
+                if (handler.internal()) {
+                    if (service == null) {
+                        fire(method, handler.async(), listener, event);
                         return;
                     }
-                    method.invoke(listener, event);
+                    if (service.equals(instance.getInternalService())) fire(method, handler.async(), listener, event);
+                    return;
                 }
+                fire(method, handler.async(), listener, event);
             }
+        }
+    }
+
+    private void fire(Method method, boolean async, IBridgeListener listener, IEvent event) {
+        if (async) {
+            BridgeDriver.getInstance().getScheduler().runAsync(() -> invoke(method, listener, event));
+            return;
+        }
+        invoke(method, listener, event);
+    }
+
+    public void invoke(Method method, IBridgeListener listener, IEvent event) {
+        try {
+            method.invoke(listener, event);
         } catch (IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
         }

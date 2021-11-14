@@ -10,4 +10,6 @@ import java.lang.annotation.Target;
 public @interface BridgeHandler {
 
     boolean internal() default false;
+
+    boolean async() default false;
 }
