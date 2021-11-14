@@ -1,35 +1,55 @@
 package eu.byncing.bridge.driver;
 
-import eu.byncing.bridge.driver.event.EventManager;
+import eu.byncing.bridge.driver.event.IEventManager;
 import eu.byncing.bridge.driver.player.PlayerManager;
 import eu.byncing.bridge.driver.protocol.PacketManager;
+import eu.byncing.bridge.driver.service.IBridgeService;
 import eu.byncing.bridge.driver.service.ServiceManager;
 
-public class BridgeDriver {
+public class BridgeDriver implements IBridgeDriver {
 
-    private static final BridgeDriver INSTANCE = new BridgeDriver();
+    private static final IBridgeDriver INSTANCE = new BridgeDriver();
+
+    private IBridgeService internalService;
 
     private final PacketManager packetManager = new PacketManager();
     private final ServiceManager serviceManager = new ServiceManager();
-    private final EventManager eventManager = new EventManager();
+    private IEventManager eventManager;
     private final PlayerManager playerManager = new PlayerManager();
 
-    public static BridgeDriver getInstance() {
+    public static IBridgeDriver getInstance() {
         return BridgeDriver.INSTANCE;
     }
 
+    @Override
+    public IBridgeService getInternalService() {
+        return internalService;
+    }
+
+    public void setInternalService(IBridgeService internalService) {
+        this.internalService = internalService;
+    }
+
+    @Override
     public PacketManager getPacketManager() {
         return packetManager;
     }
 
+    @Override
     public ServiceManager getServiceManager() {
         return serviceManager;
     }
 
-    public EventManager getEventManager() {
+    @Override
+    public IEventManager getEventManager() {
         return eventManager;
     }
 
+    public void setEventManager(IEventManager eventManager) {
+        this.eventManager = eventManager;
+    }
+
+    @Override
     public PlayerManager getPlayerManager() {
         return playerManager;
     }
