@@ -27,7 +27,6 @@ public class PlayerConnectionHandler implements IPacketHandler<Packet> {
             BridgePlayer player = (BridgePlayer) client.getPlayers().getPlayer(connect.getUniqueId());
             if (service.getPlayers().stream().noneMatch(bridgePlayer -> bridgePlayer.getUniqueId().equals(player.getUniqueId()))) {
                 service.getPlayers().add(player);
-                client.sendMessage("Player added: " + player.getService().getName() + ", " + player.getName());
             }
             player.setService(service);
             client.sendMessage("Player " + player.getName() + " has connected with the " + service.getName() + " service.");
