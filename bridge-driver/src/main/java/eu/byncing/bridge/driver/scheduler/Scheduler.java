@@ -9,8 +9,10 @@ public class Scheduler {
 
     public SchedulerTask runAsync(Runnable runnable) {
         SchedulerTask task = new SchedulerTask(tasks.size(), runnable);
-        task.run();
-        cancel(task.getId());
+        new Thread(() -> {
+            task.run();
+            cancel(task.getId());
+        }).start();
         return task;
     }
 
