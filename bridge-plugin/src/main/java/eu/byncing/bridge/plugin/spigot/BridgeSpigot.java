@@ -30,7 +30,9 @@ public class BridgeSpigot extends JavaPlugin {
                     client.sendPacket(new PacketServiceUpdate(service.getName(), server.getMotd(), server.getOnlinePlayers().size(), server.getMaxPlayers()));
                     Bukkit.getOnlinePlayers().forEach(player -> {
                         IBridgePlayer bridgePlayer = client.getPlayers().getPlayer(player.getUniqueId());
-                        client.sendPacket(new PacketPlayerUpdate(player.getUniqueId(), player.getName(), service.getName(), SpigotReflection.getPlayerPing(player), bridgePlayer.getAddress()));
+                        if (bridgePlayer != null) {
+                            client.sendPacket(new PacketPlayerUpdate(player.getUniqueId(), player.getName(), service.getName(), SpigotReflection.getPlayerPing(player), bridgePlayer.getAddress()));
+                        }
                     });
                 }
             }
