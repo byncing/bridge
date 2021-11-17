@@ -49,51 +49,56 @@ public class BridgeListener implements Listener {
         event.setResponse(response);
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void handle(ServerConnectEvent event) {
-        if (event.getReason() == ServerConnectEvent.Reason.JOIN_PROXY) {
-            ProxiedPlayer proxiedPlayer = event.getPlayer();
-            BridgeData data = server.getConfig().getData();
-            IBridgeService service = server.getServices().getService(event.getTarget().getName());
+        server.getDriver().getScheduler().runDelay(() -> {
+            if (event.getReason() == ServerConnectEvent.Reason.JOIN_PROXY) {
+                ProxiedPlayer proxiedPlayer = event.getPlayer();
+                BridgeData data = server.getConfig().getData();
+                IBridgeService service = server.getServices().getService(event.getTarget().getName());
 
-            if (data.fallback != null) service = server.getServices().getService(data.fallback);
+                if (data.fallback != null) service = server.getServices().getService(data.fallback);
 
-            if (service == null) {
-                event.setCancelled(true);
-                proxiedPlayer.disconnect(new TextComponent(data.serviceOffline.replace("%service%", (data.fallback == null ? event.getTarget().getName() : data.fallback))));
-                return;
-            }
-
-            ServerInfo info = ProxyServer.getInstance().getServerInfo(service.getName());
-            if (event.getTarget() != info) event.setTarget(info);
-            if (data.fallback != null) event.setTarget(event.getTarget());
-
-            String[] s = proxiedPlayer.getSocketAddress().toString().substring(1).split(":");
-            IBridgePlayer player = new BridgePlayer(proxiedPlayer.getUniqueId(), proxiedPlayer.getName(), new PlayerAddress(s[0], Integer.parseInt(s[1])), service);
-
-            String[] strings = server.getConfig().getTabStorage().update(player.getUniqueId());
-            proxiedPlayer.setTabHeader(new TextComponent(strings[0]), new TextComponent(strings[1]));
-
-            server.sendMessage("Player " + player.getName() + " has connected.");
-            server.getPlayers().getPlayers().add(player);
-            server.getEvents().call(new PlayerNetConnectEvent(player, service));
-            server.sendPacket(new PacketPlayerNetConnect(player.getUniqueId(), player.getName(), service.getName(), player.getAddress()));
-
-            int onlineCount = ProxyServer.getInstance().getOnlineCount();
-
-            if (data.maintenance) {
-                if (data.isWhitelist(player.getName())) return;
-                if (!proxiedPlayer.hasPermission(data.commandBypass)) {
-                    proxiedPlayer.disconnect(new TextComponent(server.getConfig().getData().maintenanceMessage));
+                if (service == null) {
+                    event.setCancelled(true);
+                    proxiedPlayer.disconnect(new TextComponent(data.serviceOffline.replace("%service%", (data.fallback == null ? event.getTarget().getName() : data.fallback))));
                     return;
                 }
-            }
-            if (onlineCount > data.maxCount) {
-                if (!proxiedPlayer.hasPermission(data.connectionBypass)) {
-                    proxiedPlayer.disconnect(new TextComponent(server.getConfig().getData().fullMessage));
+
+                ServerInfo info = ProxyServer.getInstance().getServerInfo(service.getName());
+                if (event.getTarget() != info) event.setTarget(info);
+                if (data.fallback != null) event.setTarget(event.getTarget());
+
+                String[] s = proxiedPlayer.getSocketAddress().toString().substring(1).split(":");
+                IBridgePlayer player = new BridgePlayer(proxiedPlayer.getUniqueId(), proxiedPlayer.getName(), new PlayerAddress(s[0], Integer.parseInt(s[1])), service);
+
+                String[] strings = server.getConfig().getTabStorage().update(player.getUniqueId());
+                proxiedPlayer.setTabHeader(new TextComponent(strings[0]), new TextComponent(strings[1]));
+
+                server.sendMessage("Player " + player.getName() + " has connected.");
+                server.getPlayers().getPlayers().add(player);
+                server.getEvents().call(new PlayerNetConnectEvent(player, service));
+                server.sendPacket(new PacketPlayerNetConnect(player.getUniqueId(), player.getName(), service.getName(), player.getAddress()));
+
+                int onlineCount = ProxyServer.getInstance().getOnlineCount();
+
+                if (data.maintenance) {
+                    boolean permission = proxiedPlayer.hasPermission(data.connectionBypass);
+                    System.out.println(permission);
+                    if (permission) return;
+                    System.out.println("go");
+                    if (!data.isWhitelist(proxiedPlayer.getName())) {
+                        proxiedPlayer.disconnect(new TextComponent(data.maintenanceMessage + " white"));
+                    }
+                }
+
+                if (onlineCount > data.maxCount) {
+                    if (!proxiedPlayer.hasPermission(data.connectionBypass)) {
+                        proxiedPlayer.disconnect(new TextComponent(data.fullMessage + " maxcount"));
+                    }
                 }
             }
-        }
+        }, 100);
     }
 
     @EventHandler
