@@ -84,17 +84,15 @@ public class BridgeListener implements Listener {
 
                 if (data.maintenance) {
                     boolean permission = proxiedPlayer.hasPermission(data.connectionBypass);
-                    System.out.println(permission);
                     if (permission) return;
-                    System.out.println("go");
                     if (!data.isWhitelist(proxiedPlayer.getName())) {
-                        proxiedPlayer.disconnect(new TextComponent(data.maintenanceMessage + " white"));
+                        proxiedPlayer.disconnect(new TextComponent(data.maintenanceMessage));
                     }
                 }
 
                 if (onlineCount > data.maxCount) {
                     if (!proxiedPlayer.hasPermission(data.connectionBypass)) {
-                        proxiedPlayer.disconnect(new TextComponent(data.fullMessage + " maxcount"));
+                        proxiedPlayer.disconnect(new TextComponent(data.fullMessage));
                     }
                 }
             }
