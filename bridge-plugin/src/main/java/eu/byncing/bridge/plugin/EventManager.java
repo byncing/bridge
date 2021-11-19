@@ -6,7 +6,6 @@ import eu.byncing.bridge.driver.event.BridgeHandler;
 import eu.byncing.bridge.driver.event.IBridgeListener;
 import eu.byncing.bridge.driver.event.IEvent;
 import eu.byncing.bridge.driver.event.IEventManager;
-import eu.byncing.bridge.driver.scheduler.Scheduler;
 import eu.byncing.bridge.driver.service.IBridgeService;
 
 import java.lang.reflect.InvocationTargetException;

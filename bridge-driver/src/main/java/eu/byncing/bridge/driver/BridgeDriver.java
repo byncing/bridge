@@ -3,9 +3,9 @@ package eu.byncing.bridge.driver;
 import eu.byncing.bridge.driver.event.IEventManager;
 import eu.byncing.bridge.driver.player.PlayerManager;
 import eu.byncing.bridge.driver.protocol.PacketManager;
-import eu.byncing.bridge.driver.scheduler.Scheduler;
 import eu.byncing.bridge.driver.service.IBridgeService;
 import eu.byncing.bridge.driver.service.ServiceManager;
+import eu.byncing.scheduler.Scheduler;
 
 public class BridgeDriver implements IBridgeDriver {
 

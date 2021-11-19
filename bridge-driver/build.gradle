@@ -18,6 +18,7 @@ dependencies {
     compileJava.options.encoding = 'UTF-8'
 
     extraLibs compileOnly('eu.byncing:net-api:1.0.0-SNAPSHOT')
+    extraLibs compileOnly("eu.byncing:scheduler:1.0.0-SNAPSHOT")
 
     configurations.compileOnly.extendsFrom(configurations.extraLibs)
 }

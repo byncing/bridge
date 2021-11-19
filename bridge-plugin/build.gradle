@@ -25,6 +25,7 @@ dependencies {
 
     extraLibs project(':bridge-driver')
 
+    implementation("eu.byncing:scheduler:1.0.0-SNAPSHOT")
     implementation('eu.byncing:net-api:1.0.0-SNAPSHOT')
     implementation('net.md-5:bungeecord-api:1.17-R0.1-SNAPSHOT')
     implementation("org.spigotmc:spigot-api:1.17-R0.1-SNAPSHOT")
