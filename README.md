@@ -33,4 +33,4 @@
 <img src="https://byncing.eu/graphic/bridge-driver/newtablist.png">
 
 #### Commands
-<img src="https://byncing.eu/repository/command.png">
+<img src="http://byncing.eu/images/command.png">
