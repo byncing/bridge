@@ -25,12 +25,12 @@
 
 #### Motd
 
-<img src="https://byncing.eu/repository/motd.png">
-<img src="https://byncing.eu/graphic/bridge-driver/motd_2.png">
+<img src="http://byncing.eu/images/motd.png">
+<img src="http://byncing.eu/images/mod_2.png">
 
 #### Tablist
 
-<img src="https://byncing.eu/graphic/bridge-driver/newtablist.png">
+<img src="http://byncing.eu/images/tablist.png">
 
 #### Commands
 <img src="http://byncing.eu/images/command.png">
