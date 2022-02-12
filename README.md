@@ -26,7 +26,7 @@
 #### Motd
 
 <img src="http://byncing.eu/images/motd.png">
-<img src="http://byncing.eu/images/mod_2.png">
+<img src="http://byncing.eu/images/motd_2.png">
 
 #### Tablist
 
